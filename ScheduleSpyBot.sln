@@ -1,9 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35514.174 d17.12
+VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ScheduleSpyBot", "SxheduleSpyBot\ScheduleSpyBot.pyproj", "{46FAEFE1-E585-452F-870E-E73F6D799472}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Secrets", "Secrets", "{078A4CDC-C786-4328-BD21-C2B480DCD893}"
+	ProjectSection(SolutionItems) = preProject
+		Secrets\KEYS.env = Secrets\KEYS.env
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
