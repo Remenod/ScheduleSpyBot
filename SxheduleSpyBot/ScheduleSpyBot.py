@@ -1,4 +1,6 @@
-import telebot
+from calendar import weekday
+import enum
+# import telebot
 from dotenv import load_dotenv
 import os
 from google.oauth2.service_account import Credentials
@@ -32,10 +34,53 @@ try:
 except Exception as e:
     print(f"Помилка: {e}")
 
-sheet = workbook.worksheets[4]
+sheet = workbook.worksheets[-1]
 
-for cell in sheet["F"]:
-    print(cell.value)
+class WeekDay(enum.Enum):   
+    Понеділок = 0
+    Вівторок  = 1
+    Середа    = 2
+    Четвер    = 3
+    Пятниця   = 4
+    Субота    = 5
+    Неділя    = 6
+
+def GetFirstNonEmptyLine(value):
+    if isinstance(value, str):
+        lines = value.split("\n")
+        return next((line for line in lines if line.strip()), None)
+    return value
+
+row = 1
+while row <= sheet.max_row:
+    cell = sheet[f"F{row}"]
+
+    if cell.coordinate in sheet.merged_cells:        
+        for merged_range in sheet.merged_cells.ranges:
+            if cell.coordinate in merged_range:
+                main_cell = sheet.cell(merged_range.min_row, merged_range.min_col)
+                main_value = GetFirstNonEmptyLine(main_cell.value)
+                if (row % 17 != 0 and row % 17 != 1) and main_value is not None:
+                    print(f"{sheet[f'B{row}'].value:.0f} ПАРА: {main_value}")
+                elif main_value is None:
+                    print(f"{sheet[f'B{row}'].value:.0f} ПАРА: нема")
+                break
+    else:        
+        cell_value = GetFirstNonEmptyLine(cell.value)
+        if (row % 17 != 0 and row % 17 != 1) and cell_value is not None:
+            print(f"{sheet[f'B{row}'].value:.0f} ПАРА: {cell_value}")
+        elif cell_value is None:
+            print(f"{sheet[f'B{row}'].value:.0f} ПАРА: нема")
+    
+    if row % 17 == 0:
+        print(f"-----{WeekDay(row / 17).name}-----")
+        row += 4
+    elif row % 17 == 1:
+        print(f"-----{WeekDay((row - 1) / 17).name}-----")
+        row += 3
+    else:
+        row += 2
+
 
 
 # def ColumRangeFormater(column):
@@ -49,11 +94,11 @@ for cell in sheet["F"]:
 
 
 
-bot = telebot.TeleBot(TELEGRAM_BOT_API)
+# bot = telebot.TeleBot(TELEGRAM_BOT_API)
 
-@bot.message_handler(commands=['start'])
-def start(message):
-    pass
+# @bot.message_handler(commands=['start'])
+# def start(message):
+#     pass
 
 # @bot.message_handler(func=lambda message: True)
 # def send(message):
