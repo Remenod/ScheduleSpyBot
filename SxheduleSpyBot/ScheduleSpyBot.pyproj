@@ -5,7 +5,7 @@
     <ProjectGuid>46faefe1-e585-452f-870e-e73f6d799472</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>ScheduleSpyBot.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,7 +22,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ScheduleSpyBot.py" />
+    <Compile Include="botBase.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="dataProcessor.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="main.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
