@@ -14,16 +14,7 @@ SERVICE_ACCOUNT_FILE = r'../Secrets/schedulespybot-86b7d86a2ebb.json'
 # Налаштування доступу до Google Sheets API
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly', 'https://www.googleapis.com/auth/drive.readonly']
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-service = build('sheets', 'v4', credentials=credentials)
-
-def DownloadSheet():
-    export_url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/export?format=xlsx"
-    headers = {"Authorization": f"Bearer {credentials.token}"}
-    response = requests.get(export_url, headers=headers)
-    if response.status_code == 200:
-        return BytesIO(response.content)
-    else:
-        raise Exception(f"Не вдалося завантажити файл. Код помилки: {response.status_code}")
+service = build('sheets', 'v4', credentials=credentials)   
 
 class WeekDay(enum.Enum):   
     Понеділок = 0
@@ -40,16 +31,18 @@ def GetFirstNonEmptyLine(value):
         return next((line for line in lines if line.strip()), None)
     return value
 
-def LoadScedule(sheet = -1):
-    try:
-        return load_workbook(DownloadSheet())    
-        print("Файл успішно завантажено")
-    except Exception as e:
-        print(f"Помилка: {e}")
-
+def LoadSheet():
+    export_url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/export?format=xlsx"
+    headers = {"Authorization": f"Bearer {credentials.token}"}
+    response = requests.get(export_url, headers=headers)
+    if response.status_code == 200:        
+        return load_workbook(BytesIO(response.content))         
+    else:
+        raise Exception(f"Не вдалося завантажити файл. Код помилки: {response.status_code}")
+    
 def GetSchedule(sheet = -1,colum = "F"):   
     output = ""
-    workbook = LoadScedule()
+    workbook = LoadSheet()
     sheet = workbook.worksheets[sheet]
     row = 1
     while row <= sheet.max_row:
@@ -80,12 +73,3 @@ def GetSchedule(sheet = -1,colum = "F"):
         else:
             row += 2
     return output
-
-# def ColumRangeFormater(column):
-#     column_name = []
-#     while column > 0:
-#         column -= 1
-#         column_name.append(chr(65 + column % 26))  # 65 = 'A'
-#         column //= 26
-#     column_name.reverse()
-#     return f"{''.join(column_name)}"
