@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace copmarer
+namespace comparer
 {
-
     public class Scedule 
     {
         public class Day
         {
             public Day(string h, string c1, string c2, string c3, string c4, string c5, string c6, string c7)
             {
+                header  = h;
                 couple1 = c1;
                 couple2 = c2;
                 couple3 = c3;
@@ -16,6 +16,17 @@ namespace copmarer
                 couple5 = c5;
                 couple6 = c6;
                 couple7 = c7;
+            }
+            public Day() 
+            {
+                header = "нема";
+                couple1 = "нема";
+                couple2 = "нема";
+                couple3 = "нема";
+                couple4 = "нема";
+                couple5 = "нема";
+                couple6 = "нема";
+                couple7 = "нема";
             }
             string header { get; set; }
             string couple1 { get; set; }
@@ -38,7 +49,7 @@ namespace copmarer
             }
             public static Day operator -(Day a, Day b) 
             {
-                var (c1,c2,c3,c4,c5,c6,c7) = ("","","","","","","");                
+                var (c1,c2,c3,c4,c5,c6,c7) = ("без змін","без змін","без змін","без змін","без змін","без змін","без змін");                
                 if (a.header != b.header)                
                     throw new Exception("Different days");
 
@@ -77,7 +88,7 @@ namespace copmarer
         public Scedule(string input)
         {
             var inputSplitted = input.Split("\n");            
-            if (inputSplitted.Length == 43) 
+            if (inputSplitted.Length >= 43) 
             {                 
                 string[] data = new string[43];
                 Array.Fill(data, "нема");
@@ -90,8 +101,16 @@ namespace copmarer
                 Friday    = new Day("Пятниця"  , data[29], data[30], data[31], data[32], data[33], data[34], data[35]);
                 Saturday  = new Day("Субота"   , data[36], data[37], data[38], data[39], data[40], data[41], data[42]);     
             }
-            else if (inputSplitted.Length == 1)
-                header = inputSplitted[0];
+            else if (inputSplitted.Length == 1) 
+            { 
+                header    = inputSplitted[0];
+                Monday    = new Day();
+                Tuesday   = new Day();
+                Wednesday = new Day();
+                Thursday  = new Day();
+                Friday    = new Day();
+                Saturday  = new Day();
+            }        
             else throw new Exception("Invalid input");
         }
         public static Scedule operator -(Scedule a, Scedule b) 
@@ -122,15 +141,10 @@ namespace copmarer
     {
         static void Main(string[] args)
         {
-            Console.OutputEncoding = System.Text.Encoding.Unicode;
-            string input = "4т (23.09-28.09.2024)\nнема\nВИЩА МАТЕМАТИКА (Лекція)\nДИСКРЕТНА МАТЕМАТИКА (Лекція)\nПРОГРАМУВАННЯ ТА АЛГОРИТМІЧНІ МОВИ (Лекція)\nФІЗИЧНА КУЛЬТУРА\nнема\nнема\nМЕТОДИ ТА ЗАСОБИ КОМП'ЮТЕРНИХ ІНФОРМАЦІЙНИХ ТЕХНОЛОГІЙ (Лекція)\nПРОГРАМУВАННЯ ТА АЛГОРИТМІЧНІ МОВИ (Лекція)\nТЕАТРАЛЬНА КУЛЬТУРА УКРАЇНИ Й ЗАХІДНОЇ ЄВРОПИ (Лекція)\nКУЛЬТУРА НАУКОВО-ДОСЛІДНИЦЬКОЇ КОМПЕТЕНТНОСТІ ФАХІВЦЯ (Лекція) / ТЕАТРАЛЬНА КУЛЬТУРА УКРАЇНИ Й ЗАХІДНОЇ ЄВРОПИ (Лекція) / ІСТОРІЯ УКРАЇНСЬКОЇ КУЛЬТУРИ (Лекція)\nФІЗИЧНА КУЛЬТУРА\nнема\nнема\nнема\nнема\nУКРАЇНСЬКА МОВА ЗА ПРОФЕСІЙНИМ СПРЯМУВАННЯМ (Пр)\nКУЛЬТУРА НАУКОВО-ДОСЛІДНИЦЬКОЇ КОМПЕТЕНТНОСТІ ФАХІВЦЯ (Лекція)\nнема\nнема\nнема\nМТЗКІТ(Л.р.)\nДискретна математика (Практика)\nПАЛМ (Л.р.)\nІноземна мова (Пр)\nнема\nнема\nнема\nнема\nВища математика (Практика)\nЕКСКУРСІЯ ДО МУЗЕЮ НАУКОВОЇ БІБЛІОТЕКИ\nнема\nнема\nнема\nнема\nнема\nІСТОРІЯ УКРАЇНСЬКОЇ КУЛЬТУРИ (Лекція)\nІСТОРІЯ УКРАЇНСЬКОЇ КУЛЬТУРИ (Лекція)\nнема\nнема\nнема\nнема";
-            string input2 = "5т (30.09-05.10.2024)\nнема\nВИЩА МАТЕМАТИКА (Лекція)\nДИСКРЕТНА МАТЕМАТИКА (Лекція)\nПРОГРАМУВАННЯ ТА АЛГОРИТМІЧНІ МОВИ (Лекція)\nФІЗИЧНА КУЛЬТУРА\nнема\nнема\nнема\nПРОГРАМУВАННЯ ТА АЛГОРИТМІЧНІ МОВИ (Лекція)\nТЕАТРАЛЬНА КУЛЬТУРА УКРАЇНИ Й ЗАХІДНОЇ ЄВРОПИ (Лекція)\nКУЛЬТУРА НАУКОВО-ДОСЛІДНИЦЬКОЇ КОМПЕТЕНТНОСТІ ФАХІВЦЯ (Лекція) / ТЕАТРАЛЬНА КУЛЬТУРА УКРАЇНИ Й ЗАХІДНОЇ ЄВРОПИ (Лекція)\nФІЗИЧНА КУЛЬТУРА\nнема\nнема\nнема\nнема\nУКРАЇНСЬКА МОВА ЗА ПРОФЕСІЙНИМ СПРЯМУВАННЯМ (Пр)\nКУЛЬТУРА НАУКОВО-ДОСЛІДНИЦЬКОЇ КОМПЕТЕНТНОСТІ ФАХІВЦЯ (Лекція)\nФІЗИЧНА КУЛЬТУРА\nнема\nнема\nМТЗКІТ(Л.р.)\nДискретна математика (Практика)\nПАЛМ (Л.р.)\nІноземна мова (Пр)\nОформлення банківських карток\nнема\nнема\nнема\nВища математика (Практика)\nнема\nнема\nнема\nнема\nнема\nнема\nІСТОРІЯ УКРАЇНСЬКОЇ КУЛЬТУРИ (Лекція)\nІСТОРІЯ УКРАЇНСЬКОЇ КУЛЬТУРИ (Лекція)\nнема\nнема\nнема\nнема";
-            Scedule scedule = new Scedule(input);
-            Scedule scedule2 = new Scedule(input2);
-            Console.WriteLine(scedule-scedule2);
-
-
-
+            Console.OutputEncoding = System.Text.Encoding.UTF8;            
+            if (args.Length < 2)            
+                throw new ArgumentException("Two arguments are required.");            
+            Console.WriteLine(new Scedule(args[0]) - new Scedule(args[1]));
         }
     }
 }

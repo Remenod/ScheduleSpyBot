@@ -1,11 +1,13 @@
-import enum
-from dotenv import load_dotenv
 import os
-from google.oauth2.service_account import Credentials
-from googleapiclient.discovery import build
+import subprocess
 import requests
-from io import BytesIO
+from dotenv import load_dotenv
+from googleapiclient.discovery import build
 from openpyxl import load_workbook, workbook
+from google.oauth2.service_account import Credentials
+from io import BytesIO
+from enum import Enum
+
 
 load_dotenv(dotenv_path=r'../Secrets/KEYS.env')
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
@@ -16,7 +18,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly', 'https://www.
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 service = build('sheets', 'v4', credentials=credentials)   
 
-class WeekDay(enum.Enum):   
+class WeekDay(Enum):   
     Понеділок = 0
     Вівторок  = 1
     Середа    = 2
@@ -31,7 +33,7 @@ def GetFirstNonEmptyLine(value):
         return next((line for line in lines if line.strip()), None)
     return value
 
-def LoadSheet():
+def LoadWorkbook():
     export_url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/export?format=xlsx"
     headers = {"Authorization": f"Bearer {credentials.token}"}
     response = requests.get(export_url, headers=headers)
@@ -40,13 +42,13 @@ def LoadSheet():
     else:
         raise Exception(f"Не вдалося завантажити файл. Код помилки: {response.status_code}")
     
-def GetSchedule(sheet_ = -1,colum = "F"):       
-    workbook = LoadSheet()
-    sheet = workbook.worksheets[sheet_]
+def GetSchedule(workbook_, sheetNum = -1,columNum = "F"):
+    workbook = workbook_
+    sheet = workbook.worksheets[sheetNum]
     output = f"{sheet.title}\n"
     row = 1
     while row <= sheet.max_row:
-        cell = sheet[f"{colum}{row}"]
+        cell = sheet[f"{columNum}{row}"]
 
         if cell.coordinate in sheet.merged_cells:        
             for merged_range in sheet.merged_cells.ranges:
@@ -71,3 +73,20 @@ def GetSchedule(sheet_ = -1,colum = "F"):
         else:
             row += 2
     return output
+
+def CompareSchedules(input1, input2):   
+    exe_path = os.path.join("../comparer", "bin", "Debug", "net8.0", "comparer.exe")       
+    try:
+        run_result = subprocess.run(
+        [exe_path, input1, input2], 
+        capture_output=True, 
+        text=True, 
+        encoding="utf-8")
+        if run_result.returncode != 0:
+            print("Execution Error:", run_result.stderr.strip())
+            return None        
+        return run_result.stdout.strip()
+
+    except FileNotFoundError:
+        print("Error: Compiled executable not found.")
+        return None
