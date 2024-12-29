@@ -16,8 +16,9 @@ def send_sheet_data(message):
 
         bot.send_message(message.chat.id, "Почекайте...")
         
-        res = GetSchedule(int(command_parts[1]) - 1)
-        bot.send_message(message.chat.id, res)
+        result = GetSchedule(int(command_parts[1]) - 1)
+        bot.send_message(message.chat.id, result)
+        print(result)
 
     except ValueError:
         bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4")
