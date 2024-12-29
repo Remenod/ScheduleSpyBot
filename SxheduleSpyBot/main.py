@@ -1,4 +1,3 @@
-from openpyxl import workbook
 from csAutoCompiler import CompileAll
 from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook
 from botBase import bot
@@ -18,11 +17,8 @@ def send_sheet_data(message):
         if int(command_parts[1]) - 1 < 0 or int(command_parts[1]) - 1 > 17:
             raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
 
-        bot.send_message(message.chat.id, "Почекайте...")
-        
-        result = GetSchedule(LoadWorkbook(), int(command_parts[1]) - 1)
-        bot.send_message(message.chat.id, result)
-        print(result)
+        bot.send_message(message.chat.id, "Почекайте...")                
+        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook(), int(command_parts[1]) - 1))        
 
     except ValueError:
         bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4")
@@ -46,12 +42,9 @@ def compare(messae):
         workbook = LoadWorkbook()
         schedule1 = GetSchedule(workbook, int(command_parts[1])-1)
         schedule2 = GetSchedule(workbook, int(command_parts[2])-1)
-        print(schedule1)
-        print(schedule2)
-        result = CompareSchedules(f"{schedule1}",f"{schedule2}")
-        print(f"result:{result}")
-        bot.send_message(messae.chat.id, result)
-        print(result)
+                
+        bot.send_message(messae.chat.id, CompareSchedules(f"{schedule1}",f"{schedule2}"))  
+        
     except ValueError:
         bot.send_message(messae.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5")
     except IndexError:
