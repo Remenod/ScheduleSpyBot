@@ -40,10 +40,10 @@ def LoadSheet():
     else:
         raise Exception(f"Не вдалося завантажити файл. Код помилки: {response.status_code}")
     
-def GetSchedule(sheet = -1,colum = "F"):   
-    output = ""
+def GetSchedule(sheet_ = -1,colum = "F"):       
     workbook = LoadSheet()
-    sheet = workbook.worksheets[sheet]
+    sheet = workbook.worksheets[sheet_]
+    output = f"{sheet.title}\n"
     row = 1
     while row <= sheet.max_row:
         cell = sheet[f"{colum}{row}"]
@@ -54,21 +54,19 @@ def GetSchedule(sheet = -1,colum = "F"):
                     main_cell = sheet.cell(merged_range.min_row, merged_range.min_col)
                     main_value = GetFirstNonEmptyLine(main_cell.value)
                     if (row % 17 != 0 and row % 17 != 1) and main_value is not None:
-                        output += f"{sheet[f'B{row}'].value:.0f} ПАРА: {main_value}\n"
+                        output += f"{main_value}\n"
                     elif main_value is None:
-                        output += f"{sheet[f'B{row}'].value:.0f} ПАРА: нема\n"
+                        output += f"нема\n"
                     break
         else:        
             cell_value = GetFirstNonEmptyLine(cell.value)
             if (row % 17 != 0 and row % 17 != 1) and cell_value is not None:
-                output += f"{sheet[f'B{row}'].value:.0f} ПАРА: {cell_value}\n"
+                output += f"{cell_value}\n"
             elif cell_value is None:
-                output += f"{sheet[f'B{row}'].value:.0f} ПАРА: нема\n"
-        if row % 17 == 0:
-            output += f"-----{WeekDay(row / 17).name}-----\n"
+                output += f"нема\n"
+        if row % 17 == 0:            
             row += 4
-        elif row % 17 == 1:
-            output += f"-----{WeekDay((row - 1) / 17).name}-----\n"
+        elif row % 17 == 1:            
             row += 3
         else:
             row += 2
