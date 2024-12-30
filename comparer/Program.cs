@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace comparer
 {
@@ -38,7 +39,7 @@ namespace comparer
             string couple7 { get; set; }
             public override string ToString()
             {
-                return $"{header}\n" +
+                return /*$"{header}\n" +*/
                        $"{couple1}\n" +
                        $"{couple2}\n" +
                        $"{couple3}\n" +
@@ -46,7 +47,7 @@ namespace comparer
                        $"{couple5}\n" +
                        $"{couple6}\n" +
                        $"{couple7}";
-            }
+            }                       
             public static Day operator -(Day a, Day b) 
             {
                 var (c1,c2,c3,c4,c5,c6,c7) = ("без змін","без змін","без змін","без змін","без змін","без змін","без змін");                
@@ -76,6 +77,15 @@ namespace comparer
 
                 return new Day(a.header, c1, c2, c3, c4, c5, c6, c7);
             }
+            public static bool operator ==(Day a, Day b) =>                             
+                 a.couple1 == b.couple1 && 
+                 a.couple2 == b.couple2 && 
+                 a.couple3 == b.couple3 && 
+                 a.couple4 == b.couple4 && 
+                 a.couple5 == b.couple5 && 
+                 a.couple6 == b.couple6 && 
+                 a.couple7 == b.couple7;            
+            public static bool operator !=(Day a, Day b) => !(a == b);            
         }        
         public string header { get; set; }
         public Day Monday    { get; set; }
@@ -125,9 +135,17 @@ namespace comparer
                 Saturday  = a.Saturday  - b.Saturday
             };
         }
+        public static bool operator ==(Scedule a, Scedule b) =>             
+             a.Monday    == b.Monday &&
+             a.Tuesday   == b.Tuesday &&
+             a.Wednesday == b.Wednesday &&
+             a.Thursday  == b.Thursday &&
+             a.Friday    == b.Friday &&
+             a.Saturday  == b.Saturday;
+        public static bool operator !=(Scedule a, Scedule b) => !(a == b);
         public override string ToString()
         {
-            return $"{header   }\n" +
+            return /*$"{header   }\n" +*/
                    $"{Monday   }\n" +
                    $"{Tuesday  }\n" +
                    $"{Wednesday}\n" +
@@ -140,11 +158,13 @@ namespace comparer
     internal class Program
     {
         static void Main(string[] args)
-        {
+        {            
             Console.OutputEncoding = System.Text.Encoding.UTF8;            
             if (args.Length < 2)            
-                throw new ArgumentException("Two arguments are required.");            
-            Console.WriteLine(new Scedule(args[0]) - new Scedule(args[1]));
+                throw new ArgumentException("Two arguments are required.");
+            var output = new Scedule(args[0]) - new Scedule(args[1]);
+            var fullNoChanges = new Scedule(output.header + string.Join("", Enumerable.Repeat("без змін\n", 44)));            
+            Console.WriteLine((output == fullNoChanges) ? "без змін" : output);
         }
     }
 }

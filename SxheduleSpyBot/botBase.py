@@ -1,3 +1,4 @@
+from openpyxl import workbook
 import telebot
 from dotenv import load_dotenv
 from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook
@@ -26,7 +27,7 @@ def send_sheet_data(message):
             raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
 
         bot.send_message(message.chat.id, "Почекайте...")
-        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook(), int(cParts[1]) - 1, enums.Group.KN24_1.value))
+        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], enums.Group.KN24_1.value))
 
     except ValueError:
         bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4")
@@ -55,8 +56,8 @@ def compare(message):
         bot.send_message(message.chat.id, "Почекайте...")
 
         workbook = LoadWorkbook()
-        schedule1 = GetSchedule(workbook, int(cParts[1]) - 1, enums.Group.KN24_1.value)
-        schedule2 = GetSchedule(workbook, int(cParts[2]) - 1, enums.Group.KN24_1.value)
+        schedule1 = GetSchedule(workbook.worksheets[int(cParts[1]) - 1], enums.Group.KN24_1.value)
+        schedule2 = GetSchedule(workbook.worksheets[int(cParts[2]) - 1], enums.Group.KN24_1.value)
 
         bot.send_message(
             message.chat.id,

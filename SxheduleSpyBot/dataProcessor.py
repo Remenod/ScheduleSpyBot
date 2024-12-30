@@ -3,7 +3,7 @@ import subprocess
 import requests
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
-from openpyxl import load_workbook, workbook
+from openpyxl import load_workbook
 from google.oauth2.service_account import Credentials
 from io import BytesIO
 import enumerations as enums
@@ -32,9 +32,8 @@ def LoadWorkbook():
     else:
         raise Exception(f"Не вдалося завантажити файл. Код помилки: {response.status_code}")
     
-def GetSchedule(workbook_, sheetNum = -1,columNum = enums.Group.KC242_2.value):
-    workbook = workbook_
-    sheet = workbook.worksheets[sheetNum]
+def GetSchedule(sheet_, columNum = enums.Group.KC242_2.value):    
+    sheet = sheet_
     output = f"{sheet.title}\n"
     row = 1
     while row <= sheet.max_row:
@@ -79,3 +78,27 @@ def CompareSchedules(input1, input2):
     except FileNotFoundError:
         print("Error: Compiled executable not found.")
         return None
+
+def CompareAllGroups():
+    output = ""
+    
+    workbook   = LoadWorkbook()
+    sheet      = workbook.worksheets[-1]
+    oldShedule = """!!!GET    FROM    DATABASE!!!"""    
+
+    i=1
+    while sheet.title != oldShedule.split("\n")[0]:
+        output += f"В розкладі з'явився новий тиждень: {sheet.title}\n"
+        if i == 1:
+            """!!!ЗАПИСАТЬ   В   БД!!!"""
+        i+=1
+        try:
+            sheet = workbook.worksheets[-i]
+        except IndexError:
+            print("Порівняння розкладів різної сигнатури")
+            return None
+    for currGroup in enums.Group:        
+        temp = f"{CompareSchedules(GetSchedule(sheet, currGroup.value), oldShedule)}\n"
+        if temp != "без змін":    
+            """НАПИСАТЬ ЛЮДСЬКИЙ ПАРСЕР ТА РОЗІСЛАТИ ВСІМ КОРИСТУВАЧАМ З currGroup output+temp"""
+            pass
