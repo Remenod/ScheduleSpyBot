@@ -1,59 +1,19 @@
 from csAutoCompiler import CompileAll
-from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook
 from botBase import bot
+import threading
+import time
 
 CompileAll()
 print("Bot started...")
 
-@bot.message_handler(commands=['print'])
-def send_sheet_data(message):
-    print("print call")
-    try:        
-        command_parts = message.text.split()
-        if len(command_parts) != 2:
-            bot.send_message(message.chat.id, "Будь ласка, вкажіть номер аркуша. Наприклад: /print 4")
-            return
 
-        if int(command_parts[1]) - 1 < 0 or int(command_parts[1]) - 1 > 17:
-            raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
+def UnIdler():
+    print("UnIdler started...")
+    while True:
+        bot.send_message(8154835372, 'Calm down snowflake. UnIdler is running')
+        time.sleep(60)
 
-        bot.send_message(message.chat.id, "Почекайте...")                
-        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook(), int(command_parts[1]) - 1))        
-
-    except ValueError:
-        bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4")
-    except IndexError:
-        bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.")
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Сталася помилка: {e}")
-
-@bot.message_handler(commands=['compare'])
-def compare(messae):
-    print("comparator call")
-    try:
-        command_parts = messae.text.split()
-        if len(command_parts) != 3:
-            bot.send_message(messae.chat.id, "Будь ласка, вкажіть два номери аркушів для порівняння. Наприклад: /compare 4 5")
-            return
-        if int(command_parts[1]) - 1 < 0 or int(command_parts[1]) - 1 > 17 or int(command_parts[2]) - 1 < 0 or int(command_parts[2]) - 1 > 17:
-            raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
-        bot.send_message(messae.chat.id, "Почекайте...")
-
-        workbook = LoadWorkbook()
-        schedule1 = GetSchedule(workbook, int(command_parts[1])-1)
-        schedule2 = GetSchedule(workbook, int(command_parts[2])-1)
-                
-        bot.send_message(messae.chat.id, CompareSchedules(f"{schedule1}",f"{schedule2}"))  
-        
-    except ValueError:
-        bot.send_message(messae.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5")
-    except IndexError:
-        bot.send_message(messae.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.")
-    except Exception as e:
-        bot.send_message(messae.chat.id, f"Сталася помилка: {e}")
+thread = threading.Thread(target=UnIdler)
+thread.start()
 
 bot.polling(none_stop=True)
-
-
-
-

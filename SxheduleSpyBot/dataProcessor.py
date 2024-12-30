@@ -6,8 +6,7 @@ from googleapiclient.discovery import build
 from openpyxl import load_workbook, workbook
 from google.oauth2.service_account import Credentials
 from io import BytesIO
-from enum import Enum
-
+import enumerations as enums
 
 load_dotenv(dotenv_path=r'../Secrets/KEYS.env')
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
@@ -17,15 +16,6 @@ SERVICE_ACCOUNT_FILE = r'../Secrets/schedulespybot-86b7d86a2ebb.json'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly', 'https://www.googleapis.com/auth/drive.readonly']
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 service = build('sheets', 'v4', credentials=credentials)   
-
-class WeekDay(Enum):   
-    Понеділок = 0
-    Вівторок  = 1
-    Середа    = 2
-    Четвер    = 3
-    Пятниця   = 4
-    Субота    = 5
-    Неділя    = 6
 
 def GetFirstNonEmptyLine(value):
     if isinstance(value, str):
@@ -42,7 +32,7 @@ def LoadWorkbook():
     else:
         raise Exception(f"Не вдалося завантажити файл. Код помилки: {response.status_code}")
     
-def GetSchedule(workbook_, sheetNum = -1,columNum = "F"):
+def GetSchedule(workbook_, sheetNum = -1,columNum = enums.Group.KC242_2.value):
     workbook = workbook_
     sheet = workbook.worksheets[sheetNum]
     output = f"{sheet.title}\n"
@@ -74,14 +64,13 @@ def GetSchedule(workbook_, sheetNum = -1,columNum = "F"):
             row += 2
     return output
 
-def CompareSchedules(input1, input2):   
-    exe_path = os.path.join("../comparer", "bin", "Debug", "net8.0", "comparer.exe")       
+def CompareSchedules(input1, input2):
+    dll_path = os.path.join("../comparer", "bin", "Debug", "net8.0", "comparer.dll")       
     try:
-        run_result = subprocess.run(
-        [exe_path, input1, input2], 
-        capture_output=True, 
-        text=True, 
-        encoding="utf-8")
+        run_result = subprocess.run(["dotnet", dll_path, input1, input2],
+                                    capture_output=True,
+                                    text=True,
+                                    encoding="utf-8")
         if run_result.returncode != 0:
             print("Execution Error:", run_result.stderr.strip())
             return None        
