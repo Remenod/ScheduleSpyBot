@@ -14,8 +14,8 @@ class Group(Enum):
     KC241_2 = 'D'
     KC242_1 = 'E'
     KC242_2 = 'F'
-    KN24_1 = 'G'
-    KN24_2 = 'H'
-    KT24 = 'I'
+    KN24_1  = 'G'
+    KN24_2  = 'H'
+    KT24    = 'I'
 
 

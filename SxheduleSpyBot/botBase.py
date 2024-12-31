@@ -1,4 +1,3 @@
-from openpyxl import workbook
 import telebot
 from dotenv import load_dotenv
 from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook
@@ -10,8 +9,33 @@ TELEGRAM_BOT_API = os.getenv("BOT_API")
 bot = telebot.TeleBot(TELEGRAM_BOT_API)
 
 @bot.message_handler(commands=['start'])
-def start(message):
+def start(message):    
     bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все")
+    
+    """ЗАПИСАТЬ В БД {message.chat.id} {message.from_user.first_name + message.from_user.last_name} {message.from_user.username}"""
+
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{enums.Group.KC241_1.name}")
+    button2 = telebot.types.InlineKeyboardButton("КС241_2", callback_data=f"{enums.Group.KC241_2.name}")
+    button3 = telebot.types.InlineKeyboardButton("КС242_1", callback_data=f"{enums.Group.KC242_1.name}")
+    button4 = telebot.types.InlineKeyboardButton("КС242_2", callback_data=f"{enums.Group.KC242_2.name}")
+    button5 = telebot.types.InlineKeyboardButton("КН24_1", callback_data=f"{enums.Group.KN24_1.name}")
+    button6 = telebot.types.InlineKeyboardButton("КН24_2", callback_data=f"{enums.Group.KN24_2.name}")
+    button7 = telebot.types.InlineKeyboardButton("КТ24", callback_data=f"{enums.Group.KT24.name}")
+        
+    keyboard.add(button1, button2)
+    keyboard.add(button3, button4)
+    keyboard.add(button5, button6, button7)
+      
+    sent_message = bot.send_message(message.chat.id, "Оберіть групу:", reply_markup=keyboard)
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_handler(call):    
+    bot.delete_message(call.message.chat.id, call.message.message_id)
+    
+    bot.send_message(call.message.chat.id, f"Ви обрали групу: {call.data}")
+
+    """ЗАПИСАТЬ В БД КОРИСТУВАЧУ call.message.chat.id групу call.data"""
 
 @bot.message_handler(commands=['print'])
 def send_sheet_data(message):
@@ -27,7 +51,7 @@ def send_sheet_data(message):
             raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
 
         bot.send_message(message.chat.id, "Почекайте...")
-        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], enums.Group.KN24_1.value))
+        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], enums.Group.KN24_1.value, True))
 
     except ValueError:
         bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4")

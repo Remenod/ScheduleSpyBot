@@ -32,7 +32,7 @@ def LoadWorkbook():
     else:
         raise Exception(f"Не вдалося завантажити файл. Код помилки: {response.status_code}")
     
-def GetSchedule(sheet_, columNum = enums.Group.KC242_2.value):    
+def GetSchedule(sheet_, columNum = enums.Group.KC242_2.value, rawOutput = False):
     sheet = sheet_
     output = f"{sheet.title}\n"
     row = 1
@@ -43,14 +43,22 @@ def GetSchedule(sheet_, columNum = enums.Group.KC242_2.value):
             for merged_range in sheet.merged_cells.ranges:
                 if cell.coordinate in merged_range:
                     main_cell = sheet.cell(merged_range.min_row, merged_range.min_col)
-                    main_value = GetFirstNonEmptyLine(main_cell.value)
+                    main_value = None
+                    if(not rawOutput):
+                        main_value = GetFirstNonEmptyLine(main_cell.value)
+                    else:
+                        main_value = main_cell.value
                     if (row % 17 != 0 and row % 17 != 1) and main_value is not None:
                         output += f"{main_value}\n"
                     elif main_value is None:
                         output += f"нема\n"
                     break
-        else:        
-            cell_value = GetFirstNonEmptyLine(cell.value)
+        else:                 
+            cell_value = None
+            if(not rawOutput):
+                cell_value = GetFirstNonEmptyLine(cell.value)
+            else:
+                cell_value = cell.value
             if (row % 17 != 0 and row % 17 != 1) and cell_value is not None:
                 output += f"{cell_value}\n"
             elif cell_value is None:
@@ -97,8 +105,10 @@ def CompareAllGroups():
         except IndexError:
             print("Порівняння розкладів різної сигнатури")
             return None
-    for currGroup in enums.Group:        
-        temp = f"{CompareSchedules(GetSchedule(sheet, currGroup.value), oldShedule)}\n"
+
+    for currGroup in enums.Group:
+        currGroupOldSchedule = """GET    FROM    DATABASE SCEDULE FOR currGroup"""
+        temp = f"{CompareSchedules(GetSchedule(sheet, currGroup.value), currGroupOldSchedule)}\n"
         if temp != "без змін":    
             """НАПИСАТЬ ЛЮДСЬКИЙ ПАРСЕР ТА РОЗІСЛАТИ ВСІМ КОРИСТУВАЧАМ З currGroup output+temp"""
             pass
