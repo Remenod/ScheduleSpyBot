@@ -1,16 +1,10 @@
-<<<<<<< HEAD
 from tokenize import group
-=======
->>>>>>> 7ec04c71d9e0c9eb979ba682914f895ba7c68e3e
 import telebot
 from dotenv import load_dotenv
 from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook
 import os
 import enumerations as enums
-<<<<<<< HEAD
 import dbUsers as du
-=======
->>>>>>> 7ec04c71d9e0c9eb979ba682914f895ba7c68e3e
 
 load_dotenv(dotenv_path=r'../Secrets/KEYS.env')
 TELEGRAM_BOT_API = os.getenv("BOT_API")
@@ -19,12 +13,7 @@ bot = telebot.TeleBot(TELEGRAM_BOT_API)
 @bot.message_handler(commands=['start'])
 def start(message):    
     bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все")
-<<<<<<< HEAD
     du.save_user(message.chat.id,message.from_user.first_name + message.from_user.last_name,message.from_user.username)
-=======
-    
-    """ЗАПИСАТЬ В БД {message.chat.id} {message.from_user.first_name + message.from_user.last_name} {message.from_user.username}"""
->>>>>>> 7ec04c71d9e0c9eb979ba682914f895ba7c68e3e
 
     keyboard = telebot.types.InlineKeyboardMarkup()
     button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{enums.Group.KC241_1.name}")
@@ -46,13 +35,7 @@ def callback_handler(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     
     bot.send_message(call.message.chat.id, f"Ви обрали групу: {call.data}")
-<<<<<<< HEAD
     du.update_group(call.message.chat.id, call.data)
-
-=======
-
-    """ЗАПИСАТЬ В БД КОРИСТУВАЧУ call.message.chat.id групу call.data"""
->>>>>>> 7ec04c71d9e0c9eb979ba682914f895ba7c68e3e
 
 @bot.message_handler(commands=['print'])
 def send_sheet_data(message):
@@ -68,11 +51,10 @@ def send_sheet_data(message):
             raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
 
         bot.send_message(message.chat.id, "Почекайте...")
-<<<<<<< HEAD
+
         bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], enums.Group.KN24_1.value, False))
-=======
         bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], enums.Group.KN24_1.value, True))
->>>>>>> 7ec04c71d9e0c9eb979ba682914f895ba7c68e3e
+
 
     except ValueError:
         bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4")
