@@ -1,19 +1,18 @@
 from csAutoCompiler import CompileAll
 from botBase import bot
-import threading
-import time
+from unIdler import StartUnIdler
+import dataProcessor as dp
+from enumerations import Group
 
 CompileAll()
+StartUnIdler()
+
 print("Bot started...")
 
-
-def UnIdler():
-    print("UnIdler started...")
-    while True:
-        bot.send_message(8154835372, 'Calm down snowflake. UnIdler is running')
-        time.sleep(60)
-
-thread = threading.Thread(target=UnIdler)
-thread.start()
+# parse test
+workbook = dp.LoadWorkbook()
+schedule1 = dp.GetSchedule(workbook.worksheets[6], Group.KC242_2.value)
+schedule2 = dp.GetSchedule(workbook.worksheets[9], Group.KC242_2.value)
+bot.send_message(-1002499863221, dp.ParseSchedule(dp.CompareSchedules(schedule1, schedule2)), parse_mode='Markdown')
 
 bot.polling(none_stop=True)
