@@ -18,8 +18,16 @@ namespace parser
                         if (day[i] != "без змін")
                         {
                             output += $"_ПАРА {i + 1}:_\n";
-                            output += $"Було:\n```\n{day[i].Split("->")[0]}\n```";
-                            output += $"Стало:\n```\n{day[i].Split("->")[1]}\n```";                            
+                            var before = day[i].Split("->")[0].Split("$[]");
+                            var after   = day[i].Split("->")[1].Split("$[]");
+                            if (before.Length > 1)                             
+                                output += $"Було:\n```\n{before[0]}\n{before[1]}\n```";
+                            else
+                                output += $"Було:\n```\n{before[0]}\n```";
+                            if (after.Length > 1)
+                                output += $"Стало:\n```\n{after[0]}\n{after[1]}\n```";
+                            else
+                                output += $"Стало:\n```\n{after[0]}\n```";
                         }
                 }
 
@@ -27,7 +35,7 @@ namespace parser
         }
         static void Main(string[] arg)
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.OutputEncoding = System.Text.Encoding.UTF8;            
             Console.WriteLine(ParseChanges(arg[0]));
         }
     }
