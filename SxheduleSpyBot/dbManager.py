@@ -2,8 +2,8 @@ import requests
 
 PHP_API_URL = 'http://telegrambot-rozklad.atwebpages.com/db_handler.php'
 
-def save_schedule(week_number, schedule_text):
-    """Зберігає розклад через PHP API"""
+#Зберігає розклад через PHP API
+def save_schedule(week_number, schedule_text):   
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'save_schedule',
@@ -18,8 +18,8 @@ def save_schedule(week_number, schedule_text):
     except Exception as e:
         print(f"Помилка збереження розкладу через PHP API: {e}")
 
-def get_schedule_from_db(week_number):
-    """Отримує розклад через PHP API"""
+#Отримує розклад через PHP API
+def get_schedule_from_db(week_number):    
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'get_schedule',

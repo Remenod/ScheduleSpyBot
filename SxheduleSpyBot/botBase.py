@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook
 import os
 import enumerations as enums
-import dbUsers as du
+import dbUsers
 
 load_dotenv(dotenv_path=r'../Secrets/KEYS.env')
 TELEGRAM_BOT_API = os.getenv("BOT_API")
@@ -13,7 +13,8 @@ bot = telebot.TeleBot(TELEGRAM_BOT_API)
 @bot.message_handler(commands=['start'])
 def start(message):    
     bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все")
-    du.save_user(message.chat.id,message.from_user.first_name + message.from_user.last_name,message.from_user.username)
+
+    dbUsers.save_user(message.chat.id, message.from_user.first_name + message.from_user.last_name, message.from_user.username)
 
     keyboard = telebot.types.InlineKeyboardMarkup()
     button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{enums.Group.KC241_1.name}")
@@ -35,11 +36,11 @@ def callback_handler(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     
     bot.send_message(call.message.chat.id, f"Ви обрали групу: {call.data}")
-    du.update_group(call.message.chat.id, call.data)
+    dbUsers.update_group(call.message.chat.id, call.data)
 
 @bot.message_handler(commands=['print'])
 def send_sheet_data(message):
-    print(f"print call by {message.from_user.first_name}")
+    print(f"print call by {message.from_user.first_name + message.from_user.last_name}")
     try:
         cParts = message.text.split()
         if len(cParts) != 2:
@@ -52,8 +53,7 @@ def send_sheet_data(message):
 
         bot.send_message(message.chat.id, "Почекайте...")
 
-        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], enums.Group.KN24_1.value, False))
-        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], enums.Group.KN24_1.value, True))
+        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], enums.Group.KN24_1.value, False))        
 
 
     except ValueError:
@@ -65,21 +65,15 @@ def send_sheet_data(message):
 
 @bot.message_handler(commands=['compare'])
 def compare(message):
-    print(f"comparator call by {message.from_user.first_name}")
+    print(f"comparator call by {message.from_user.first_name  + message.from_user.last_name}")
     try:
         cParts = message.text.split()
         if len(cParts) != 3:
-            bot.send_message(
-                message.chat.id,
-                "Будь ласка, вкажіть два номери аркушів для порівняння. Наприклад: /compare 4 5"
-            )
+            bot.send_message(message.chat.id, "Будь ласка, вкажіть два номери аркушів для порівняння. Наприклад: /compare 4 5")
             return
-        if int(cParts[1]) - 1 < 0 or int(
-                cParts[1]) - 1 > 17 or int(
-                    cParts[2]) - 1 < 0 or int(
-                        cParts[2]) - 1 > 17:
-            raise IndexError(
-                "Номер аркуша виходить за межі допустимого діапазону (1-17).")
+        if int(cParts[1]) - 1 < 0 or int(cParts[1]) - 1 > 17 or int(cParts[2]) - 1 < 0 or int(cParts[2]) - 1 > 17:
+            raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
+
         bot.send_message(message.chat.id, "Почекайте...")
 
         workbook = LoadWorkbook()
@@ -91,12 +85,8 @@ def compare(message):
             f'{CompareSchedules(f"{schedule1}", f"{schedule2}")}')
 
     except ValueError:
-        bot.send_message(
-            message.chat.id,
-            "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5"
-        )
+        bot.send_message(message.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5")
     except IndexError:
-        bot.send_message(message.chat.id,
-                         "Немає аркуша з таким номером. Перевірте ще раз.")
+        bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.")
     except Exception as e:
         bot.send_message(message.chat.id, f"Сталася помилка: {e}")

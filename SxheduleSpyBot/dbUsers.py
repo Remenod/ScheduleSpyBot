@@ -2,8 +2,8 @@ import requests
 
 PHP_API_URL = 'http://telegrambot-rozklad.atwebpages.com/db_handler.php'
 
-def save_user(chat_id, full_name, username):
-    """Зберігає або оновлює інформацію про користувача через PHP API"""
+#Зберігає або оновлює інформацію про користувача через PHP API
+def save_user(chat_id, full_name, username):    
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'save_user',
@@ -19,8 +19,8 @@ def save_user(chat_id, full_name, username):
     except Exception as e:
         print(f"Помилка збереження користувача через PHP API: {e}")
 
-def update_group(chat_id, group_name):
-    """Оновлює групу користувача через PHP API"""
+#Оновлює групу користувача через PHP API
+def update_group(chat_id, group_name):    
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'update_group',
@@ -35,8 +35,8 @@ def update_group(chat_id, group_name):
     except Exception as e:
         print(f"Помилка оновлення групи через PHP API: {e}")
 
-def get_user(chat_id):
-    """Отримує інформацію про користувача через PHP API"""
+#Отримує інформацію про користувача через PHP API
+def get_user(chat_id):    
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'get_user',
