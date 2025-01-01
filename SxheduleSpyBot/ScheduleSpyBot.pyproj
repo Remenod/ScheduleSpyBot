@@ -28,6 +28,7 @@
     <Compile Include="dataProcessor.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="databaseManager.py" />
     <Compile Include="main.py" />
     <Compile Include="csAutoCompiler.py">
       <SubType>Code</SubType>

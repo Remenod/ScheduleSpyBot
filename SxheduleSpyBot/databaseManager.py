@@ -2,8 +2,42 @@ import requests
 
 PHP_API_URL = 'http://telegrambot-rozklad.atwebpages.com/db_handler.php'
 
-#Зберігає або оновлює інформацію про користувача через PHP API
-def save_user(chat_id, full_name, username):    
+#Schedule management
+
+def SaveSchedule(week_number, schedule_text):
+    try:
+        response = requests.post(PHP_API_URL, data={
+            'action': 'save_schedule',
+            'week_number': week_number,
+            'schedule_text': schedule_text
+        })
+        response_data = response.json()
+        if response.status_code == 200 and response_data.get('success'):    
+            print("Розклад успішно збережено через PHP API.")
+        else:
+            print("Помилка збереження розкладу:", response_data.get('error'))
+    except Exception as e:
+        print(f"Помилка збереження розкладу через PHP API: {e}")
+
+def GetScheduleFromDB(week_number):    
+    try:
+        response = requests.post(PHP_API_URL, data={
+            'action': 'get_schedule',
+            'week_number': week_number
+        })
+        response_data = response.json()
+        if response.status_code == 200 and response_data.get('schedule') is not None:
+            return response_data['schedule']
+        else:
+            return "Розкладу для цього тижня не знайдено."
+    except Exception as e:
+        print(f"Помилка отримання розкладу через PHP API: {e}")
+        return None
+
+
+#User management
+
+def SaveUser(chat_id, full_name, username):
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'save_user',
@@ -19,8 +53,7 @@ def save_user(chat_id, full_name, username):
     except Exception as e:
         print(f"Помилка збереження користувача через PHP API: {e}")
 
-#Оновлює групу користувача через PHP API
-def update_group(chat_id, group_name):    
+def UpdateUserGroup(chat_id, group_name):
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'update_group',
@@ -35,8 +68,7 @@ def update_group(chat_id, group_name):
     except Exception as e:
         print(f"Помилка оновлення групи через PHP API: {e}")
 
-#Отримує інформацію про користувача через PHP API
-def get_user(chat_id):    
+def GetUserInfo(chat_id):
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'get_user',
