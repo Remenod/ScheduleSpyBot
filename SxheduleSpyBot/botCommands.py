@@ -1,3 +1,4 @@
+import telebot
 from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook, ParseComparerOutput
 from botBase import bot
 import databaseManager
@@ -5,50 +6,50 @@ from enumerations import Group
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все")
+    bot.send_message(message.chat.id, "Р„ С”РґРёРЅР° РєРѕРјР°РЅРґР° /print {РЅРѕРјРµСЂ С‚РёР¶РЅСЏ}\nРќР°РїСЂРёРєР»Р°Рґ /print 4 - РІРёРІРµРґРµ СЂРѕР·РєР»Р°Рґ Р·Р° 4 С‚РёР¶РґРµРЅСЊ. РџРѕРєРё РІСЃРµ")
 
-    databaseManager.SaveUser(message.chat.id, f"{message.from_user.first_name} {message.from_user.last_name}", message.from_user.username)
+    databaseManager.SaveUser(message.from_user.id, f"{message.from_user.first_name} {message.from_user.last_name}", message.from_user.username)
 
     keyboard = telebot.types.InlineKeyboardMarkup()
-    button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{Group.KC241_1.name}")
-    button2 = telebot.types.InlineKeyboardButton("КС241_2", callback_data=f"{Group.KC241_2.name}")
-    button3 = telebot.types.InlineKeyboardButton("КС242_1", callback_data=f"{Group.KC242_1.name}")
-    button4 = telebot.types.InlineKeyboardButton("КС242_2", callback_data=f"{Group.KC242_2.name}")
-    button5 = telebot.types.InlineKeyboardButton("КН24_1",  callback_data=f"{Group.KN24_1.name}")
-    button6 = telebot.types.InlineKeyboardButton("КН24_2",  callback_data=f"{Group.KN24_2.name}")
-    button7 = telebot.types.InlineKeyboardButton("КТ24",    callback_data=f"{Group.KT24.name}")
+    button1 = telebot.types.InlineKeyboardButton("РљРЎ241_1", callback_data=f"{Group.KC241_1.name}")
+    button2 = telebot.types.InlineKeyboardButton("РљРЎ241_2", callback_data=f"{Group.KC241_2.name}")
+    button3 = telebot.types.InlineKeyboardButton("РљРЎ242_1", callback_data=f"{Group.KC242_1.name}")
+    button4 = telebot.types.InlineKeyboardButton("РљРЎ242_2", callback_data=f"{Group.KC242_2.name}")
+    button5 = telebot.types.InlineKeyboardButton("РљРќ24_1",  callback_data=f"{Group.KN24_1.name}")
+    button6 = telebot.types.InlineKeyboardButton("РљРќ24_2",  callback_data=f"{Group.KN24_2.name}")
+    button7 = telebot.types.InlineKeyboardButton("РљРў24",    callback_data=f"{Group.KT24.name}")
         
     keyboard.add(button1, button2)
     keyboard.add(button3, button4)
     keyboard.add(button5, button6, button7)
       
-    sent_message = bot.send_message(message.chat.id, "Оберіть групу:", reply_markup=keyboard)
+    sent_message = bot.send_message(message.chat.id, "РћР±РµСЂС–С‚СЊ РіСЂСѓРїСѓ:", reply_markup=keyboard)
 
 @bot.message_handler(commands=['changeGroup'])
 def change_group(message):
-    databaseManager.SaveUser(message.chat.id, f"{message.from_user.first_name} {message.from_user.last_name}", message.from_user.username)
+    databaseManager.SaveUser(message.from_user.id, f"{message.from_user.first_name} {message.from_user.last_name}", message.from_user.username)
 
     keyboard = telebot.types.InlineKeyboardMarkup()
-    button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{Group.KC241_1.name}")
-    button2 = telebot.types.InlineKeyboardButton("КС241_2", callback_data=f"{Group.KC241_2.name}")
-    button3 = telebot.types.InlineKeyboardButton("КС242_1", callback_data=f"{Group.KC242_1.name}")
-    button4 = telebot.types.InlineKeyboardButton("КС242_2", callback_data=f"{Group.KC242_2.name}")
-    button5 = telebot.types.InlineKeyboardButton("КН24_1",  callback_data=f"{Group.KN24_1.name}")
-    button6 = telebot.types.InlineKeyboardButton("КН24_2",  callback_data=f"{Group.KN24_2.name}")
-    button7 = telebot.types.InlineKeyboardButton("КТ24",    callback_data=f"{Group.KT24.name}")
+    button1 = telebot.types.InlineKeyboardButton("РљРЎ241_1", callback_data=f"{Group.KC241_1.name}")
+    button2 = telebot.types.InlineKeyboardButton("РљРЎ241_2", callback_data=f"{Group.KC241_2.name}")
+    button3 = telebot.types.InlineKeyboardButton("РљРЎ242_1", callback_data=f"{Group.KC242_1.name}")
+    button4 = telebot.types.InlineKeyboardButton("РљРЎ242_2", callback_data=f"{Group.KC242_2.name}")
+    button5 = telebot.types.InlineKeyboardButton("РљРќ24_1",  callback_data=f"{Group.KN24_1.name}")
+    button6 = telebot.types.InlineKeyboardButton("РљРќ24_2",  callback_data=f"{Group.KN24_2.name}")
+    button7 = telebot.types.InlineKeyboardButton("РљРў24",    callback_data=f"{Group.KT24.name}")
         
     keyboard.add(button1, button2)
     keyboard.add(button3, button4)
     keyboard.add(button5, button6, button7)
     
-    sent_message = bot.send_message(message.chat.id, "Оберіть групу іншу:", reply_markup=keyboard)
+    sent_message = bot.send_message(message.chat.id, "РћР±РµСЂС–С‚СЊ РіСЂСѓРїСѓ С–РЅС€Сѓ:", reply_markup=keyboard)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)    
-    bot.send_message(call.message.chat.id, f"Ви обрали групу: {call.data}")
+    bot.send_message(call.message.chat.id, f"Р’Рё РѕР±СЂР°Р»Рё РіСЂСѓРїСѓ: {call.data}")
 
-    databaseManager.UpdateUserGroup(call.message.chat.id, call.data)
+    databaseManager.UpdateUserGroup(call.from_user.id, call.data)
 
 @bot.message_handler(commands=['print'])
 def send_sheet_data(message):
@@ -57,23 +58,23 @@ def send_sheet_data(message):
         cParts = message.text.split()
         if len(cParts) != 2:
             bot.send_message(
-                message.chat.id,"Будь ласка, вкажіть номер аркуша. Наприклад: /print 4")
+                message.chat.id,"Р‘СѓРґСЊ Р»Р°СЃРєР°, РІРєР°Р¶С–С‚СЊ РЅРѕРјРµСЂ Р°СЂРєСѓС€Р°. РќР°РїСЂРёРєР»Р°Рґ: /print 4")
             return
 
         if int(cParts[1]) - 1 < 0 or int(cParts[1]) - 1 > 17:
-            raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
+            raise IndexError("РќРѕРјРµСЂ Р°СЂРєСѓС€Р° РІРёС…РѕРґРёС‚СЊ Р·Р° РјРµР¶С– РґРѕРїСѓСЃС‚РёРјРѕРіРѕ РґС–Р°РїР°Р·РѕРЅСѓ (1-17).")
 
-        bot.send_message(message.chat.id, "Почекайте...")
+        bot.send_message(message.chat.id, "РџРѕС‡РµРєР°Р№С‚Рµ...")
 
         bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], Group.KN24_1.value, False))        
 
 
     except ValueError:
-        bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4")
+        bot.send_message(message.chat.id, "Р‘СѓРґСЊ Р»Р°СЃРєР°, РІРІРµРґС–С‚СЊ РєРѕСЂРµРєС‚РЅРёР№ РЅРѕРјРµСЂ Р°СЂРєСѓС€Р°. РќР°РїСЂРёРєР»Р°Рґ: /print 4")
     except IndexError:
-        bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.")
+        bot.send_message(message.chat.id, "РќРµРјР°С” Р°СЂРєСѓС€Р° Р· С‚Р°РєРёРј РЅРѕРјРµСЂРѕРј. РџРµСЂРµРІС–СЂС‚Рµ С‰Рµ СЂР°Р·.")
     except Exception as e:
-        bot.send_message(message.chat.id, f"Сталася помилка: {e}")
+        bot.send_message(message.chat.id, f"РЎС‚Р°Р»Р°СЃСЏ РїРѕРјРёР»РєР°: {e}")
 
 @bot.message_handler(commands=['compare'])
 def compare(message):
@@ -81,12 +82,12 @@ def compare(message):
     try:
         cParts = message.text.split()
         if len(cParts) != 3:
-            bot.send_message(message.chat.id, "Будь ласка, вкажіть два номери аркушів для порівняння. Наприклад: /compare 4 5")
+            bot.send_message(message.chat.id, "Р‘СѓРґСЊ Р»Р°СЃРєР°, РІРєР°Р¶С–С‚СЊ РґРІР° РЅРѕРјРµСЂРё Р°СЂРєСѓС€С–РІ РґР»СЏ РїРѕСЂС–РІРЅСЏРЅРЅСЏ. РќР°РїСЂРёРєР»Р°Рґ: /compare 4 5")
             return
         if int(cParts[1]) - 1 < 0 or int(cParts[1]) - 1 > 17 or int(cParts[2]) - 1 < 0 or int(cParts[2]) - 1 > 17:
-            raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
+            raise IndexError("РќРѕРјРµСЂ Р°СЂРєСѓС€Р° РІРёС…РѕРґРёС‚СЊ Р·Р° РјРµР¶С– РґРѕРїСѓСЃС‚РёРјРѕРіРѕ РґС–Р°РїР°Р·РѕРЅСѓ (1-17).")
 
-        bot.send_message(message.chat.id, "Почекайте...")
+        bot.send_message(message.chat.id, "РџРѕС‡РµРєР°Р№С‚Рµ...")
 
         workbook = LoadWorkbook()
         schedule1 = GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KN24_1.value)
@@ -95,11 +96,11 @@ def compare(message):
         bot.send_message(message.chat.id, CompareSchedules(schedule1, schedule2))
 
     except ValueError:
-        bot.send_message(message.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5")
+        bot.send_message(message.chat.id, "Р‘СѓРґСЊ Р»Р°СЃРєР°, РІРІРµРґС–С‚СЊ РєРѕСЂРµРєС‚РЅС– РЅРѕРјРµСЂРё Р°СЂРєСѓС€С–РІ РґР»СЏ РїРѕСЂС–РІРЅСЏРЅРЅСЏ. РќР°РїСЂРёРєР»Р°Рґ: /compare 4 5")
     except IndexError:
-        bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.")
+        bot.send_message(message.chat.id, "РќРµРјР°С” Р°СЂРєСѓС€Р° Р· С‚Р°РєРёРј РЅРѕРјРµСЂРѕРј. РџРµСЂРµРІС–СЂС‚Рµ С‰Рµ СЂР°Р·.")
     except Exception as e:
-        bot.send_message(message.chat.id, f"Сталася помилка: {e}")
+        bot.send_message(message.chat.id, f"РЎС‚Р°Р»Р°СЃСЏ РїРѕРјРёР»РєР°: {e}")
 
 @bot.message_handler(commands=['coolCompare'])
 def coolCompare(message):
@@ -107,12 +108,12 @@ def coolCompare(message):
     try:
         cParts = message.text.split()
         if len(cParts) != 3:
-            bot.send_message(message.chat.id, "Будь ласка, вкажіть два номери аркушів для порівняння. Наприклад: /coolCompare 4 5")
+            bot.send_message(message.chat.id, "Р‘СѓРґСЊ Р»Р°СЃРєР°, РІРєР°Р¶С–С‚СЊ РґРІР° РЅРѕРјРµСЂРё Р°СЂРєСѓС€С–РІ РґР»СЏ РїРѕСЂС–РІРЅСЏРЅРЅСЏ. РќР°РїСЂРёРєР»Р°Рґ: /coolCompare 4 5")
             return
         if int(cParts[1]) - 1 < 0 or int(cParts[1]) - 1 > 17 or int(cParts[2]) - 1 < 0 or int(cParts[2]) - 1 > 17:
-            raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
+            raise IndexError("РќРѕРјРµСЂ Р°СЂРєСѓС€Р° РІРёС…РѕРґРёС‚СЊ Р·Р° РјРµР¶С– РґРѕРїСѓСЃС‚РёРјРѕРіРѕ РґС–Р°РїР°Р·РѕРЅСѓ (1-17).")
 
-        bot.send_message(message.chat.id, "Почекайте...")
+        bot.send_message(message.chat.id, "РџРѕС‡РµРєР°Р№С‚Рµ...")
 
         workbook = LoadWorkbook()
         schedule1 = GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KC242_2.value)
@@ -121,8 +122,8 @@ def coolCompare(message):
         bot.send_message(message.chat.id, ParseComparerOutput(CompareSchedules(schedule1, schedule2)), parse_mode='Markdown')
 
     except ValueError:
-        bot.send_message(message.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5")
+        bot.send_message(message.chat.id, "Р‘СѓРґСЊ Р»Р°СЃРєР°, РІРІРµРґС–С‚СЊ РєРѕСЂРµРєС‚РЅС– РЅРѕРјРµСЂРё Р°СЂРєСѓС€С–РІ РґР»СЏ РїРѕСЂС–РІРЅСЏРЅРЅСЏ. РќР°РїСЂРёРєР»Р°Рґ: /compare 4 5")
     except IndexError:
-        bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.")
+        bot.send_message(message.chat.id, "РќРµРјР°С” Р°СЂРєСѓС€Р° Р· С‚Р°РєРёРј РЅРѕРјРµСЂРѕРј. РџРµСЂРµРІС–СЂС‚Рµ С‰Рµ СЂР°Р·.")
     except Exception as e:
-        bot.send_message(message.chat.id, f"Сталася помилка: {e}")
+        bot.send_message(message.chat.id, f"РЎС‚Р°Р»Р°СЃСЏ РїРѕРјРёР»РєР°: {e}")

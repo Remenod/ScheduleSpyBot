@@ -8,6 +8,7 @@ from google.oauth2.service_account import Credentials
 from io import BytesIO
 import enumerations as enums
 from botBase import bot
+import databaseManager
 
 load_dotenv(dotenv_path=r'../Secrets/KEYS.env')
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
@@ -121,7 +122,7 @@ def CompareAllGroups():
     sameAsOldWeekIndex = 1;
 
     if(workbook.worksheets[-1].title != oldWeekName):
-        users = []                                                             #get from db
+        users = [databaseManager.users_id]                                                            #get from db
         for user in users:
             bot.send_message(user, "В розкладі з'явився новий тиждень!")
             

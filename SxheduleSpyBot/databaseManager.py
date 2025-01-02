@@ -1,6 +1,8 @@
+from urllib import response
 import requests
 
 PHP_API_URL = 'http://telegrambot-rozklad.atwebpages.com/db_handler.php'
+USER_IDS_URL = 'http://telegrambot-rozklad.atwebpages.com/get_user_ids.php'
 
 #Schedule management
 
@@ -83,3 +85,19 @@ def GetUserInfo(chat_id):
     except Exception as e:
         print(f"Помилка отримання користувача через PHP API: {e}")
         return None
+
+def get_all_user_ids():
+    try:
+        response = requests.get(USER_IDS_URL)
+        if response.status_code == 200:
+            user_ids = response.json()
+            return user_ids
+        else:
+            print(f"Помилка запиту до PHP серверу: {response.status_code}")
+            return []
+        
+    except Exception as e:
+        print(f"Помилка під час запиту до PHP сервера: {e}")
+        return []
+users_id = get_all_user_ids()
+print("Отримані айді:", users_id)
