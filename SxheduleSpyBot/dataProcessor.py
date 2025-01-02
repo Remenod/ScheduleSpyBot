@@ -7,6 +7,7 @@ from openpyxl import load_workbook
 from google.oauth2.service_account import Credentials
 from io import BytesIO
 import enumerations as enums
+from botBase import bot
 
 load_dotenv(dotenv_path=r'../Secrets/KEYS.env')
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
@@ -97,7 +98,7 @@ def CompareSchedules(input1, input2):
         print("Error: Compiled executable not found.")
         return None
 
-def ParseSchedule(input):
+def ParseComparerOutput(input):
     dll_path = os.path.join("../parser", "bin", "Debug", "net8.0", "parser.dll")       
     try:
         run_result = subprocess.run(["dotnet", dll_path, input],
@@ -112,28 +113,32 @@ def ParseSchedule(input):
         print("Error: Compiled executable not found.")
         return None
 
-def CompareAllGroups():
-    output = ""
-    
-    workbook   = LoadWorkbook()
-    sheet      = workbook.worksheets[-1]
-    oldShedule = """!!!GET    FROM    DATABASE!!!"""    
+def CompareAllGroups():    
+    workbook = LoadWorkbook()
+    oldSchedulesArr = []                                                       #get from db
 
-    i=1
-    while sheet.title != oldShedule.split("\n")[0]:
-        output += f"В розкладі з'явився новий тиждень: {sheet.title}\n"
-        if i == 1:
-            """!!!ЗАПИСАТЬ   В   БД!!!"""
-        i+=1
+    oldWeekName = oldSchedulesArr[0].split("\n")[0]
+    sameAsOldWeekIndex = 1;
+
+    if(workbook.worksheets[-1].title != oldWeekName):
+        users = []                                                             #get from db
+        for user in users:
+            bot.send_message(user, "В розкладі з'явився новий тиждень!")
+            
         try:
-            sheet = workbook.worksheets[-i]
+            while workbook.worksheets[-sameAsOldWeekIndex].title != oldWeekName:
+                sameAsOldWeekIndex += 1
         except IndexError:
-            print("Порівняння розкладів різної сигнатури")
-            return None
+               print("Error: No old week found")
+               return None
 
-    for currGroup in enums.Group:
-        currGroupOldSchedule = """GET    FROM    DATABASE SCEDULE FOR currGroup"""
-        temp = f"{CompareSchedules(GetSchedule(sheet, currGroup.value), currGroupOldSchedule)}\n"
-        if temp != "без змін":    
-            """НАПИСАТЬ ЛЮДСЬКИЙ ПАРСЕР ТА РОЗІСЛАТИ ВСІМ КОРИСТУВАЧАМ З currGroup output+temp"""
-            pass
+    groupIndex = 0
+    for group in enums.Group:
+        newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group.value)        
+        comparerOut = CompareSchedules(newSchedule, oldSchedulesArr[groupIndex])
+        groupIndex += 1
+        if comparerOut != "без змін":
+            allCurrGroupUsers = []                                               #get from db
+            for user in allCurrGroupUsers:
+                bot.send_message(user, f"{ParseComparerOutput(comparerOut)}")
+            ###########                                                          #записати в базу в комірку розкладу групи {group.name} розклад {newSchedule}

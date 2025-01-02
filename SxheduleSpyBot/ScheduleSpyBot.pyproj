@@ -36,6 +36,12 @@
     <Compile Include="enumerations.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="changesChecker.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="botCommands.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="unIdler.py">
       <SubType>Code</SubType>
     </Compile>
