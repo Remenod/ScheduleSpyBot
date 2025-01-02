@@ -13,7 +13,7 @@ bot = telebot.TeleBot(TELEGRAM_BOT_API)
 def start(message):
     bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все")
 
-    databaseManager.SaveUser(message.chat.id, message.from_user.first_name + message.from_user.last_name, message.from_user.username)
+    databaseManager.SaveUser(message.chat.id, f"{message.from_user.first_name} {message.from_user.last_name}", message.from_user.username)
 
     keyboard = telebot.types.InlineKeyboardMarkup()
     button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{Group.KC241_1.name}")
