@@ -1,8 +1,13 @@
+from multiprocessing.util import SUBDEBUG
+from sched import scheduler
+from unittest import result
+from urllib import response
 import requests
 
 PHP_API_URL = 'http://telegrambot-rozklad.atwebpages.com/db_handler.php'
 USER_IDS_URL = 'http://telegrambot-rozklad.atwebpages.com/get_user_ids.php'
 SAVE_SCHEDULE_URL = 'http://telegrambot-rozklad.atwebpages.com/Schedules.php'
+OLD_SCHEDULE_URL = 'http://telegrambot-rozklad.atwebpages.com/old_schedule.php'
 #Schedule management
 
 def SaveSchedule(week_number, schedule_text):
@@ -116,3 +121,23 @@ def WriteSchedule(subgroup,schedule_data):
     except Exception as e:
         print(f"Request failed:{str(e)}")
         return{"error":f"Request failed:{str(e)}"}
+
+def GetOldSchedule(subgroup):
+    data = {
+        "action":"get_schedule",
+        "subgroup": subgroup
+    }
+    try:
+        response = requests.post(OLD_SCHEDULE_URL,data=data)
+        response.raise_for_status()
+        result = response.json()
+        if "success" in result and result["success"]:
+            print(f"Розклад для{subgroup}:{result['schedule']}")
+            return result["schedule"]
+        else:
+            error_message = result.get("error","Невідома помилка")
+            print(f"Помилка:{error_message}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Помилка запиту до PHP: {e}")
+        return None

@@ -1,8 +1,10 @@
+from re import S
 from csAutoCompiler import CompileAll
 from botBase import bot
 from unIdler import StartUnIdler
 from changesChecker import StartCheckerLoop
 import botCommands
+
 
 CompileAll()
 #StartUnIdler()
