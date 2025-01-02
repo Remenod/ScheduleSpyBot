@@ -122,7 +122,7 @@ def CompareAllGroups():
     sameAsOldWeekIndex = 1;
 
     if(workbook.worksheets[-1].title != oldWeekName):
-        users = [databaseManager.users_id]                                                            #get from db
+        users = [databaseManager.users_id]                                                            
         for user in users:
             bot.send_message(user, "В розкладі з'явився новий тиждень!")
             

@@ -3,7 +3,7 @@ import requests
 
 PHP_API_URL = 'http://telegrambot-rozklad.atwebpages.com/db_handler.php'
 USER_IDS_URL = 'http://telegrambot-rozklad.atwebpages.com/get_user_ids.php'
-
+SAVE_SCHEDULE_URL = 'http://telegrambot-rozklad.atwebpages.com/Schedules.php'
 #Schedule management
 
 def SaveSchedule(week_number, schedule_text):
@@ -86,7 +86,7 @@ def GetUserInfo(chat_id):
         print(f"Помилка отримання користувача через PHP API: {e}")
         return None
 
-def get_all_user_ids():
+def GetAllUserIds():
     try:
         response = requests.get(USER_IDS_URL)
         if response.status_code == 200:
@@ -99,5 +99,18 @@ def get_all_user_ids():
     except Exception as e:
         print(f"Помилка під час запиту до PHP сервера: {e}")
         return []
-users_id = get_all_user_ids()
-print("Отримані айді:", users_id)
+
+def WriteSchedule(subgroup,schedule_data):
+    data = {
+        "action": "save_schedule",
+        "subgroup": subgroup,
+        "schedule_data": schedule_data
+    }
+    try:
+        response = requests.post(SAVE_SCHEDULE_URL,data=data)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return{"error":f"Error{response.status_code}:{response.text}"}
+    except Exception as e:
+            return{"error":f"Request failed:{str(e)}"}
