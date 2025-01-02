@@ -5,7 +5,6 @@ from unIdler import StartUnIdler
 from changesChecker import StartCheckerLoop
 import botCommands
 
-
 CompileAll()
 #StartUnIdler()
 #StartCheckerLoop(300)

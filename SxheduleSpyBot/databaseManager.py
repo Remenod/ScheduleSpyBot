@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from multiprocessing.util import SUBDEBUG
 from sched import scheduler
 from unittest import result
@@ -8,6 +9,7 @@ PHP_API_URL = 'http://telegrambot-rozklad.atwebpages.com/db_handler.php'
 USER_IDS_URL = 'http://telegrambot-rozklad.atwebpages.com/get_user_ids.php'
 SAVE_SCHEDULE_URL = 'http://telegrambot-rozklad.atwebpages.com/Schedules.php'
 OLD_SCHEDULE_URL = 'http://telegrambot-rozklad.atwebpages.com/old_schedule.php'
+ALL_BY_USERS_URL = 'http://telegrambot-rozklad.atwebpages.com/get_all_users_by_group.php'
 #Schedule management
 
 def SaveSchedule(week_number, schedule_text):
@@ -141,3 +143,11 @@ def GetOldSchedule(subgroup):
     except requests.exceptions.RequestException as e:
         print(f"Помилка запиту до PHP: {e}")
         return None
+
+def GetAllUsersByGroup(group_name):
+    data = {
+        "action": "get_chat_ids",
+        "group_name": group_name
+    }
+    response = requests.post(ALL_BY_USERS_URL,data=data)
+    return response.json()
