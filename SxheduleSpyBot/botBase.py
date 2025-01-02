@@ -32,6 +32,8 @@ def start(message):
 
 @bot.message_handler(commands=['changeGroup'])
 def change_group(message):
+    databaseManager.SaveUser(message.chat.id, f"{message.from_user.first_name} {message.from_user.last_name}", message.from_user.username)
+
     keyboard = telebot.types.InlineKeyboardMarkup()
     button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{Group.KC241_1.name}")
     button2 = telebot.types.InlineKeyboardButton("КС241_2", callback_data=f"{Group.KC241_2.name}")

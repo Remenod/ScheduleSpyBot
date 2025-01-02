@@ -47,9 +47,9 @@ def SaveUser(chat_id, full_name, username):
         })
         response_data = response.json()
         if response.status_code == 200 and response_data.get('success'):
-            print("Користувач успішно збережений або оновлений через PHP API.")
+            print(f"Користувач {full_name} успішно збережений або оновлений через PHP API.")
         else:
-            print("Помилка збереження користувача:", response_data.get('error'))
+            print(f"Помилка збереження користувача {full_name}:", response_data.get('error'))
     except Exception as e:
         print(f"Помилка збереження користувача через PHP API: {e}")
 
@@ -62,7 +62,7 @@ def UpdateUserGroup(chat_id, group_name):
         })
         response_data = response.json()
         if response.status_code == 200 and response_data.get('success'):
-            print("Групу користувача успішно оновлено через PHP API.")
+            print(f"Групу користувача {chat_id} успішно оновлено через PHP API.")
         else:
             print("Помилка оновлення групи:", response_data.get('error'))
     except Exception as e:
