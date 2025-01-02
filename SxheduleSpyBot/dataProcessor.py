@@ -24,7 +24,13 @@ def GetRightLines(value):
         auditoriumLine = next(
             (line for line in lines if line.strip().startswith("а.") or 
              line.strip().startswith("Наукова бібліотека")), None)
-        return f"{subjectLine} $[]{auditoriumLine}"
+        if subjectLine is not None:
+            if auditoriumLine is not None:
+                return f"{subjectLine} $[]{auditoriumLine}"
+            else:
+                return f"{subjectLine}"
+        else:
+            return "помилка обробки розкладу"
     return value
 
 def LoadWorkbook():

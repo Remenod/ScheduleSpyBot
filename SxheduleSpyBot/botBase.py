@@ -30,6 +30,23 @@ def start(message):
       
     sent_message = bot.send_message(message.chat.id, "Оберіть групу:", reply_markup=keyboard)
 
+@bot.message_handler(commands=['changeGroup'])
+def change_group(message):
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{Group.KC241_1.name}")
+    button2 = telebot.types.InlineKeyboardButton("КС241_2", callback_data=f"{Group.KC241_2.name}")
+    button3 = telebot.types.InlineKeyboardButton("КС242_1", callback_data=f"{Group.KC242_1.name}")
+    button4 = telebot.types.InlineKeyboardButton("КС242_2", callback_data=f"{Group.KC242_2.name}")
+    button5 = telebot.types.InlineKeyboardButton("КН24_1",  callback_data=f"{Group.KN24_1.name}")
+    button6 = telebot.types.InlineKeyboardButton("КН24_2",  callback_data=f"{Group.KN24_2.name}")
+    button7 = telebot.types.InlineKeyboardButton("КТ24",    callback_data=f"{Group.KT24.name}")
+        
+    keyboard.add(button1, button2)
+    keyboard.add(button3, button4)
+    keyboard.add(button5, button6, button7)
+    
+    sent_message = bot.send_message(message.chat.id, "Оберіть групу іншу:", reply_markup=keyboard)
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)    
