@@ -114,32 +114,42 @@ def ParseComparerOutput(input):
         print("Error: Compiled executable not found.")
         return None
 
-def CompareAllGroups():    
-    workbook = LoadWorkbook()
-    oldSchedulesArr = []                                                       #get from db
+def CompareAllGroups():
+    print("checker call")
+    workbook = LoadWorkbook()    
 
-    oldWeekName = oldSchedulesArr[0].split("\n")[0]
+    oldWeekName = f"{databaseManager.GetOldSchedule(enums.Group.KC241_1.name)}".split("\n")[0]    
     sameAsOldWeekIndex = 1;
 
-    if(workbook.worksheets[-1].title != oldWeekName):
-        users = [databaseManager.users_id]                                                            
-        for user in users:
-            bot.send_message(user, "В розкладі з'явився новий тиждень!")
-            
+    if(workbook.worksheets[-1].title != oldWeekName):                    
         try:
             while workbook.worksheets[-sameAsOldWeekIndex].title != oldWeekName:
                 sameAsOldWeekIndex += 1
         except IndexError:
                print("Error: No old week found")
                return None
+        finally:
+            users = databaseManager.GetAllUserIds()
+            for user in users:
+                try:
+                    bot.send_message(user, "В розкладі з'явився новий тиждень!")
+                except Exception as e:
+                    print(f"Error sending message to user: {e}")
+    
+    for group in enums.Group:        
+        newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group.value)
+        oldSchedule = databaseManager.GetOldSchedule(group.name)
 
-    groupIndex = 0
-    for group in enums.Group:
-        newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group.value)        
-        comparerOut = CompareSchedules(newSchedule, oldSchedulesArr[groupIndex])
-        groupIndex += 1
+        comparerOut = CompareSchedules(newSchedule, oldSchedule)      
+        
         if comparerOut != "без змін":
-            allCurrGroupUsers = []                                               #get from db
-            for user in allCurrGroupUsers:
-                bot.send_message(user, f"{ParseComparerOutput(comparerOut)}")
-            ###########                                                          #записати в базу в комірку розкладу групи {group.name} розклад {newSchedule}
+            allCurrGroupUsers = databaseManager.GetAllUsersByGroup(group.name)            
+            if allCurrGroupUsers is not None or len(allCurrGroupUsers) != 0:
+                for user in allCurrGroupUsers:
+                    try:
+                        bot.send_message(user, f"{ParseComparerOutput(comparerOut)}")
+                    except Exception as e:
+                        print(f"Error sending message to user: {e}")            
+        else:
+            print(f"Розклад для {group.name} не змінився.")
+        databaseManager.WriteSchedule(group.name, GetSchedule(workbook.worksheets[-1], group.value))

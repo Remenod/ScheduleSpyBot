@@ -1,5 +1,5 @@
 import telebot
-from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook, ParseComparerOutput
+from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook, ParseComparerOutput, CompareAllGroups
 from botBase import bot
 import databaseManager
 from enumerations import Group
@@ -8,7 +8,13 @@ from enumerations import Group
 def start(message):
     bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все")
 
-    databaseManager.SaveUser(message.from_user.id, f"{message.from_user.first_name} {message.from_user.last_name}", message.from_user.username)
+    fullName = None
+    if message.from_user.last_name is not None:
+        fullName = f"{message.from_user.first_name} {message.from_user.last_name}"
+    else:
+        fullName = message.from_user.first_name
+
+    databaseManager.SaveUser(message.from_user.id, fullName, message.from_user.username)
 
     keyboard = telebot.types.InlineKeyboardMarkup()
     button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{Group.KC241_1.name}")
@@ -27,7 +33,13 @@ def start(message):
 
 @bot.message_handler(commands=['changeGroup'])
 def change_group(message):
-    databaseManager.SaveUser(message.from_user.id, f"{message.from_user.first_name} {message.from_user.last_name}", message.from_user.username)
+    fullName = None
+    if message.from_user.last_name is not None:
+        fullName = f"{message.from_user.first_name} {message.from_user.last_name}"
+    else:
+        fullName = message.from_user.first_name
+
+    databaseManager.SaveUser(message.from_user.id, fullName, message.from_user.username)
 
     keyboard = telebot.types.InlineKeyboardMarkup()
     button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{Group.KC241_1.name}")
@@ -128,13 +140,22 @@ def coolCompare(message):
     except Exception as e:
         bot.send_message(message.chat.id, f"Сталася помилка: {e}")
 
+# Admin only
+
 @bot.message_handler(commands=['fillScheduleTable'])
 def fill_group_handler(message):
     if message.chat.id == -1002499863221:
         bot.send_message(-1002499863221, "Заповнюю бд...")
-        sheet = LoadWorkbook().worksheets[-1]
+        sheet = LoadWorkbook().worksheets[-2]
         for group in Group:
             bot.send_message(-1002499863221, f"Заповнюю групу {group.name}")
             schedule = GetSchedule(sheet, group.value)            
             databaseManager.WriteSchedule(group.name, f"{schedule}")
+        bot.send_message(-1002499863221, "Готово")
+
+@bot.message_handler(commands=['callChecker'])
+def fill_group_handler(message):
+    if message.chat.id == -1002499863221:
+        bot.send_message(-1002499863221, "Запускаю перевірку...")
+        CompareAllGroups()
         bot.send_message(-1002499863221, "Готово")

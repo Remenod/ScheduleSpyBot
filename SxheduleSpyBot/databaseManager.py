@@ -27,7 +27,7 @@ def SaveSchedule(week_number, schedule_text):
     except Exception as e:
         print(f"Помилка збереження розкладу через PHP API: {e}")
 
-def GetScheduleFromDB(week_number):    
+def GetScheduleFromDB(week_number):
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'get_schedule',
@@ -41,6 +41,44 @@ def GetScheduleFromDB(week_number):
     except Exception as e:
         print(f"Помилка отримання розкладу через PHP API: {e}")
         return None
+
+def GetOldSchedule(subgroup):
+    data = {
+        "action":"get_schedule",
+        "subgroup": subgroup
+    }
+    try:
+        response = requests.post(OLD_SCHEDULE_URL,data=data)
+        response.raise_for_status()
+        result = response.json()
+        if "success" in result and result["success"]:            
+            return result["schedule"]
+        else:
+            error_message = result.get("error","Невідома помилка")
+            print(f"Помилка:{error_message}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Помилка запиту до PHP: {e}")
+        return None
+
+def WriteSchedule(subgroup,schedule_data):
+    print(f"Write Schedule call for {subgroup}")
+    data = {
+        "action": "save_schedule",
+        "subgroup": subgroup,
+        "schedule_data": schedule_data
+    }
+    try:
+        response = requests.post(SAVE_SCHEDULE_URL,data=data)
+        if response.status_code == 200:
+            print("Schedule saved")
+            return response.json()
+        else:
+            print("Error:",response.text)
+            return{"error":f"Error{response.status_code}:{response.text}"}
+    except Exception as e:
+        print(f"Request failed:{str(e)}")
+        return{"error":f"Request failed:{str(e)}"}
 
 
 #User management
@@ -106,48 +144,15 @@ def GetAllUserIds():
         print(f"Помилка під час запиту до PHP сервера: {e}")
         return []
 
-def WriteSchedule(subgroup,schedule_data):
-    data = {
-        "action": "save_schedule",
-        "subgroup": subgroup,
-        "schedule_data": schedule_data
-    }
-    try:
-        response = requests.post(SAVE_SCHEDULE_URL,data=data)
-        if response.status_code == 200:
-            print("Schedule saved")
-            return response.json()
-        else:
-            print("Error:",response.text)
-            return{"error":f"Error{response.status_code}:{response.text}"}
-    except Exception as e:
-        print(f"Request failed:{str(e)}")
-        return{"error":f"Request failed:{str(e)}"}
-
-def GetOldSchedule(subgroup):
-    data = {
-        "action":"get_schedule",
-        "subgroup": subgroup
-    }
-    try:
-        response = requests.post(OLD_SCHEDULE_URL,data=data)
-        response.raise_for_status()
-        result = response.json()
-        if "success" in result and result["success"]:
-            print(f"Розклад для{subgroup}:{result['schedule']}")
-            return result["schedule"]
-        else:
-            error_message = result.get("error","Невідома помилка")
-            print(f"Помилка:{error_message}")
-            return None
-    except requests.exceptions.RequestException as e:
-        print(f"Помилка запиту до PHP: {e}")
-        return None
-
 def GetAllUsersByGroup(group_name):
     data = {
         "action": "get_chat_ids",
         "group_name": group_name
     }
-    response = requests.post(ALL_BY_USERS_URL,data=data)
-    return response.json()
+    response = requests.post(ALL_BY_USERS_URL, data=data)
+    result = response.json()
+        
+    if result.get('success') and 'chat_ids' in result:
+        return result['chat_ids']
+        
+    return []
