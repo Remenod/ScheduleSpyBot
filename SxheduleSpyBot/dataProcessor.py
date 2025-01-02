@@ -61,7 +61,7 @@ def GetSchedule(sheet_, columNum = enums.Group.KC242_2.value, rawOutput = False)
                     if (row % 17 != 0 and row % 17 != 1) and main_value is not None:
                         output += f"{main_value}\n"
                     elif main_value is None:
-                        output += f"нема\n"
+                        output += f"Пара відсутня\n"
                     break
         else:                 
             cell_value = None
@@ -72,7 +72,7 @@ def GetSchedule(sheet_, columNum = enums.Group.KC242_2.value, rawOutput = False)
             if (row % 17 != 0 and row % 17 != 1) and cell_value is not None:
                 output += f"{cell_value}\n"
             elif cell_value is None:
-                output += f"нема\n"
+                output += f"Пара відсутня\n"
         if row % 17 == 0:            
             row += 4
         elif row % 17 == 1:            
