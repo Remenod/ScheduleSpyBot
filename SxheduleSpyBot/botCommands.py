@@ -66,7 +66,7 @@ def send_sheet_data(message):
 
         bot.send_message(message.chat.id, "Почекайте...")
 
-        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], Group.KN24_1.value, False))        
+        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], Group.KC241_1.value, False))        
 
 
     except ValueError:
@@ -127,3 +127,14 @@ def coolCompare(message):
         bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.")
     except Exception as e:
         bot.send_message(message.chat.id, f"Сталася помилка: {e}")
+
+@bot.message_handler(commands=['fillScheduleTable'])
+def fill_group_handler(message):
+    if message.chat.id == -1002499863221:
+        bot.send_message(-1002499863221, "Заповнюю бд...")
+        sheet = LoadWorkbook().worksheets[-1]
+        for group in Group:
+            bot.send_message(-1002499863221, f"Заповнюю групу {group.name}")
+            schedule = GetSchedule(sheet, group.value)            
+            databaseManager.WriteSchedule(group.name, f"{schedule}")
+        bot.send_message(-1002499863221, "Готово")

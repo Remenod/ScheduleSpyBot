@@ -1,4 +1,3 @@
-from urllib import response
 import requests
 
 PHP_API_URL = 'http://telegrambot-rozklad.atwebpages.com/db_handler.php'
@@ -109,8 +108,11 @@ def WriteSchedule(subgroup,schedule_data):
     try:
         response = requests.post(SAVE_SCHEDULE_URL,data=data)
         if response.status_code == 200:
+            print("Schedule saved")
             return response.json()
         else:
+            print("Error:",response.text)
             return{"error":f"Error{response.status_code}:{response.text}"}
     except Exception as e:
-            return{"error":f"Request failed:{str(e)}"}
+        print(f"Request failed:{str(e)}")
+        return{"error":f"Request failed:{str(e)}"}
