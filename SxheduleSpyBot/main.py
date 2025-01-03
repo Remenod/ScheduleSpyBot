@@ -6,9 +6,9 @@ from unIdler import StartUnIdler
 from changesChecker import StartCheckerLoop
 import botCommands
 
-#StartUnIdler()
-#StartCheckerLoop(300) 
-
 print("Bot started...")
+
+StartUnIdler()
+StartCheckerLoop(300) 
 
 bot.polling(none_stop=True)

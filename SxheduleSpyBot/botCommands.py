@@ -155,7 +155,5 @@ def fill_group_handler(message):
 
 @bot.message_handler(commands=['callChecker'])
 def fill_group_handler(message):
-    if message.chat.id == -1002499863221:
-        bot.send_message(-1002499863221, "Запускаю перевірку...")
-        CompareAllGroups()
-        bot.send_message(-1002499863221, "Готово")
+    if message.chat.id == -1002499863221:        
+        CompareAllGroups()        

@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Secrets", "Secrets", "{078A4CDC-C786-4328-BD21-C2B480DCD893}"
 	ProjectSection(SolutionItems) = preProject
 		Secrets\KEYS.env = Secrets\KEYS.env
+		Secrets\schedulespybot-86b7d86a2ebb.json = Secrets\schedulespybot-86b7d86a2ebb.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "comparer", "comparer\comparer.csproj", "{7738FDC1-FC38-4131-A424-CE2A145C5F0C}"

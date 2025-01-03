@@ -116,11 +116,15 @@ def ParseComparerOutput(input):
 
 def CompareAllGroups():
     print("checker call")
+    bot.send_message(-1002499863221, "Запускаю перевірку...")
+
+    bot.send_message(-1002499863221, "Завантажую таблицю з Google API...")
     workbook = LoadWorkbook()    
 
     oldWeekName = f"{databaseManager.GetOldSchedule(enums.Group.KC241_1.name)}".split("\n")[0]    
     sameAsOldWeekIndex = 1;
 
+    bot.send_message(-1002499863221, "Перевіряю наявність нового тижня...")
     if(workbook.worksheets[-1].title != oldWeekName):                    
         try:
             while workbook.worksheets[-sameAsOldWeekIndex].title != oldWeekName:
@@ -136,20 +140,24 @@ def CompareAllGroups():
                 except Exception as e:
                     print(f"Error sending message to user: {e}")
     
+    bot.send_message(-1002499863221, "Перевіряю зміни в кожній групі...")
     for group in enums.Group:        
         newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group.value)
         oldSchedule = databaseManager.GetOldSchedule(group.name)
 
-        comparerOut = CompareSchedules(newSchedule, oldSchedule)      
+        comparerOut = CompareSchedules(oldSchedule, newSchedule)      
         
         if comparerOut != "без змін":
+            print(f"ВИЯВЛЕНІ ЗМІНИ В РОЗКЛАДІ ГРУПИ {group.name}")
+            bot.send_message(-1002499863221, f"ВИЯВЛЕНІ ЗМІНИ В РОЗКЛАДІ ГРУПИ {group.name}")
             allCurrGroupUsers = databaseManager.GetAllUsersByGroup(group.name)            
             if allCurrGroupUsers is not None or len(allCurrGroupUsers) != 0:
                 for user in allCurrGroupUsers:
                     try:
-                        bot.send_message(user, f"{ParseComparerOutput(comparerOut)}")
+                        bot.send_message(user, f"*В розкладі виявлені зміни:*\n{ParseComparerOutput(comparerOut)}", "Markdown")
                     except Exception as e:
                         print(f"Error sending message to user: {e}")            
         else:
             print(f"Розклад для {group.name} не змінився.")
         databaseManager.WriteSchedule(group.name, GetSchedule(workbook.worksheets[-1], group.value))
+    bot.send_message(-1002499863221, "Готово")
