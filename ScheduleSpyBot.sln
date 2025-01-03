@@ -17,6 +17,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "scheduleClass", "scheduleCl
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ScheduleSpyBot", "ScheduleSpyBot\ScheduleSpyBot.pyproj", "{46FAEFE1-E585-452F-870E-E73F6D799472}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{75C4FDB4-AB70-426F-8EAE-F455FA3BB156}"
+	ProjectSection(SolutionItems) = preProject
+		requirements.txt = requirements.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
