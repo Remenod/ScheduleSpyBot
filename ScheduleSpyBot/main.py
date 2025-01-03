@@ -1,6 +1,3 @@
-from csAutoCompiler import CompileAll
-CompileAll()
-
 from botBase import bot
 from unIdler import StartUnIdler
 from changesChecker import StartCheckerLoop

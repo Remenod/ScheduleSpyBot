@@ -83,10 +83,9 @@ def GetSchedule(sheet_, columNum = enums.Group.KC242_2.value, rawOutput = False)
             row += 2
     return output
 
-def CompareSchedules(input1, input2):
-    dll_path = os.path.join("../comparer", "bin", "Debug", "net8.0", "comparer.dll")       
+def CompareSchedules(input1, input2):           
     try:
-        run_result = subprocess.run(["dotnet", dll_path, input1, input2],
+        run_result = subprocess.run(["../bin/comparer", input1, input2],
                                     capture_output=True,
                                     text=True,
                                     encoding="utf-8")
@@ -99,10 +98,9 @@ def CompareSchedules(input1, input2):
         print("Error: Compiled executable not found.")
         return None
 
-def ParseComparerOutput(input):
-    dll_path = os.path.join("../parser", "bin", "Debug", "net8.0", "parser.dll")       
+def ParseComparerOutput(input):      
     try:
-        run_result = subprocess.run(["dotnet", dll_path, input],
+        run_result = subprocess.run(["../bin/parser", input],
                                     capture_output=True,
                                     text=True,
                                     encoding="utf-8")

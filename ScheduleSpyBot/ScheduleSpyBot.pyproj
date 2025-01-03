@@ -30,9 +30,6 @@
     </Compile>
     <Compile Include="databaseManager.py" />
     <Compile Include="main.py" />
-    <Compile Include="csAutoCompiler.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="enumerations.py">
       <SubType>Code</SubType>
     </Compile>
