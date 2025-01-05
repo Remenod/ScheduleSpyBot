@@ -156,7 +156,7 @@ def fill_group_handler(message):
 @bot.message_handler(commands=['callChecker'])
 def fill_group_handler(message):
     if message.chat.id == -1002499863221:        
-        CompareAllGroups()        
+        CompareAllGroups()               
 
 @bot.message_handler(func=lambda message: True)
 def send(message):
