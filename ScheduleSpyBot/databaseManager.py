@@ -15,7 +15,6 @@ USER_IDS_URL = os.getenv('USER_IDS_URL')
 SAVE_SCHEDULE_URL = os.getenv('SAVE_SCHEDULE_URL')
 OLD_SCHEDULE_URL = os.getenv('OLD_SCHEDULE_URL')
 ALL_BY_USERS_URL = os.getenv('ALL_BY_USERS_URL')
-
 #Schedule management
 
 def SaveSchedule(week_number, schedule_text):
