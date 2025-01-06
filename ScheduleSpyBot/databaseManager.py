@@ -1,5 +1,3 @@
-from asyncio.format_helpers import _format_args_and_kwargs
-from urllib import response
 import requests
 from dotenv import load_dotenv
 import os
@@ -7,31 +5,16 @@ from logger import log
 
 load_dotenv('../Secrets/KEYS.env')
 
-PHP_API_URL       = os.getenv('PHP_API_URL')
-USER_IDS_URL      = os.getenv('USER_IDS_URL')
-OLD_SCHEDULE_URL  = os.getenv('OLD_SCHEDULE_URL')
-ALL_BY_USERS_URL  = os.getenv('ALL_BY_USERS_URL')
-SAVE_SCHEDULE_URL = os.getenv('SAVE_SCHEDULE_URL')
+PHP_API_URL        = os.getenv('PHP_API_URL')
+USER_IDS_URL       = os.getenv('USER_IDS_URL')
+OLD_SCHEDULE_URL   = os.getenv('OLD_SCHEDULE_URL')
+ALL_BY_USERS_URL   = os.getenv('ALL_BY_USERS_URL')
+SAVE_SCHEDULE_URL  = os.getenv('SAVE_SCHEDULE_URL')
 GET_SHEET_NAME_URL = os.getenv('GET_SHEET_NAME')
-DELETE_SHEET_URL = os.getenv('DELETE_SHEET')
+DELETE_SHEET_URL   = os.getenv('DELETE_SHEET')
 
 
 #Schedule management
-
-def SaveSchedule(week_number, schedule_text):
-    try:
-        response = requests.post(PHP_API_URL, data={
-            'action': 'save_schedule',
-            'week_number': week_number,
-            'schedule_text': schedule_text
-        })
-        response_data = response.json()
-        if response.status_code == 200 and response_data.get('success'):    
-            log("Розклад успішно збережено через PHP API.")
-        else:
-            log("Помилка збереження розкладу:", response_data.get('error'))
-    except Exception as e:
-        log(f"Помилка збереження розкладу через PHP API: {e}")
 
 def GetScheduleFromDB(week_number):
     try:
