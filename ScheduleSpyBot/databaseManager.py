@@ -47,16 +47,17 @@ def GetScheduleFromDB(week_number):
         log(f"Помилка отримання розкладу через PHP API: {e}")
         return None
 
-def GetOldSchedule(subgroup):
+def GetOldSchedule(sheet_number, subgroup):
     data = {
         "action":"get_schedule",
-        "subgroup": subgroup
+        "subgroup_name": subgroup,
+        "sheet_number": sheet_number
     }
     try:
         response = requests.post(OLD_SCHEDULE_URL,data=data)
         response.raise_for_status()
         result = response.json()
-        if "success" in result and result["success"]:            
+        if response.status_code == 200:       
             return result["schedule"]
         else:
             error_message = result.get("error","Невідома помилка")
@@ -84,7 +85,7 @@ def WriteSchedule(sheet_number,subgroup,schedule_data):
         log(f"Write Schedule Request failed:{e}")
         return{"error":f"Write Schedule Request failed:{e}"}
 
-def GetAllSheetsName():
+def GetAllSheetsNumber():
     try:
         response = requests.get(GET_SHEET_NAME_URL)
         if response.status_code == 200:
