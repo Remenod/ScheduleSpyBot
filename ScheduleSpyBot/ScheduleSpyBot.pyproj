@@ -42,7 +42,7 @@
     <Compile Include="botCommands.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="unIdler.py">
+    <Compile Include="logger.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

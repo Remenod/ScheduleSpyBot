@@ -1,20 +1,17 @@
-from dataclasses import dataclass
-from multiprocessing.util import SUBDEBUG
-from sched import scheduler
-from unittest import result
-from urllib import response
 import requests
 from dotenv import load_dotenv
 import os
+from logger import log
 
 load_dotenv('../Secrets/KEYS.env')
 
-#URL_Connect
-PHP_API_URL = os.getenv('PHP_API_URL')
-USER_IDS_URL = os.getenv('USER_IDS_URL')
+PHP_API_URL       = os.getenv('PHP_API_URL')
+USER_IDS_URL      = os.getenv('USER_IDS_URL')
+OLD_SCHEDULE_URL  = os.getenv('OLD_SCHEDULE_URL')
+ALL_BY_USERS_URL  = os.getenv('ALL_BY_USERS_URL')
 SAVE_SCHEDULE_URL = os.getenv('SAVE_SCHEDULE_URL')
-OLD_SCHEDULE_URL = os.getenv('OLD_SCHEDULE_URL')
-ALL_BY_USERS_URL = os.getenv('ALL_BY_USERS_URL')
+
+
 #Schedule management
 
 def SaveSchedule(week_number, schedule_text):
@@ -26,11 +23,11 @@ def SaveSchedule(week_number, schedule_text):
         })
         response_data = response.json()
         if response.status_code == 200 and response_data.get('success'):    
-            print("Розклад успішно збережено через PHP API.")
+            log("Розклад успішно збережено через PHP API.")
         else:
-            print("Помилка збереження розкладу:", response_data.get('error'))
+            log("Помилка збереження розкладу:", response_data.get('error'))
     except Exception as e:
-        print(f"Помилка збереження розкладу через PHP API: {e}")
+        log(f"Помилка збереження розкладу через PHP API: {e}")
 
 def GetScheduleFromDB(week_number):
     try:
@@ -42,9 +39,10 @@ def GetScheduleFromDB(week_number):
         if response.status_code == 200 and response_data.get('schedule') is not None:
             return response_data['schedule']
         else:
-            return "Розкладу для цього тижня не знайдено."
+            log("Розкладу для цього тижня не знайдено.")
+            return None
     except Exception as e:
-        print(f"Помилка отримання розкладу через PHP API: {e}")
+        log(f"Помилка отримання розкладу через PHP API: {e}")
         return None
 
 def GetOldSchedule(subgroup):
@@ -60,10 +58,10 @@ def GetOldSchedule(subgroup):
             return result["schedule"]
         else:
             error_message = result.get("error","Невідома помилка")
-            print(f"Помилка:{error_message}")
+            log(f"Помилка:{error_message}")
             return None
     except requests.exceptions.RequestException as e:
-        print(f"Помилка запиту до PHP: {e}")
+        log(f"Помилка запиту до PHP: {e}")
         return None
 
 def WriteSchedule(subgroup,schedule_data):
@@ -76,14 +74,14 @@ def WriteSchedule(subgroup,schedule_data):
     try:
         response = requests.post(SAVE_SCHEDULE_URL,data=data)
         if response.status_code == 200:
-            print("Schedule saved")
+            log("Schedule saved")
             return response.json()
         else:
-            print("Error:",response.text)
+            log("Write Schedule Error:",response.text)
             return{"error":f"Error{response.status_code}:{response.text}"}
     except Exception as e:
-        print(f"Request failed:{str(e)}")
-        return{"error":f"Request failed:{str(e)}"}
+        log(f"Write Schedule Request failed:{e}")
+        return{"error":f"Write Schedule Request failed:{e}"}
 
 
 #User management
@@ -98,11 +96,11 @@ def SaveUser(chat_id, full_name, username):
         })
         response_data = response.json()
         if response.status_code == 200 and response_data.get('success'):
-            print(f"Користувач {full_name} успішно збережений або оновлений через PHP API.")
+            log(f"Користувач {full_name} успішно збережений або оновлений через PHP API.")
         else:
-            print(f"Помилка збереження користувача {full_name}:", response_data.get('error'))
+            log(f"Помилка збереження користувача {full_name}:", response_data.get('error'))
     except Exception as e:
-        print(f"Помилка збереження користувача через PHP API: {e}")
+        log(f"Помилка збереження користувача через PHP API: {e}")
 
 def UpdateUserGroup(chat_id, group_name):
     try:
@@ -113,11 +111,11 @@ def UpdateUserGroup(chat_id, group_name):
         })
         response_data = response.json()
         if response.status_code == 200 and response_data.get('success'):
-            print(f"Групу користувача {chat_id} успішно оновлено через PHP API.")
+            log(f"Групу користувача {chat_id} успішно оновлено через PHP API.")
         else:
-            print("Помилка оновлення групи:", response_data.get('error'))
+            log("Помилка оновлення групи:", response_data.get('error'))
     except Exception as e:
-        print(f"Помилка оновлення групи через PHP API: {e}")
+        log(f"Помилка оновлення групи через PHP API: {e}")
 
 def GetUserInfo(chat_id):
     try:
@@ -129,35 +127,40 @@ def GetUserInfo(chat_id):
         if response.status_code == 200 and response_data.get('user') is not None:
             return response_data['user']
         else:
-            print("Помилка отримання користувача:", response_data.get('error'))
+            log("Помилка отримання користувача:", response_data.get('error'))
             return None
     except Exception as e:
-        print(f"Помилка отримання користувача через PHP API: {e}")
+        log(f"Помилка отримання користувача через PHP API: {e}")
         return None
 
 def GetAllUserIds():
     try:
         response = requests.get(USER_IDS_URL)
         if response.status_code == 200:
-            user_ids = response.json()
-            return user_ids
+            result = response.json()
+            return result
         else:
-            print(f"Помилка запиту до PHP серверу: {response.status_code}")
+            log(f"Помилка отримання користувачів: {result.get('error')}")
             return []
         
     except Exception as e:
-        print(f"Помилка під час запиту до PHP сервера: {e}")
+        log(f"Помилка під час запиту(GetAllUserIds) до PHP сервера: {e}")
         return []
 
 def GetAllUsersByGroup(group_name):
-    data = {
-        "action": "get_chat_ids",
-        "group_name": group_name
-    }
-    response = requests.post(ALL_BY_USERS_URL, data=data)
-    result = response.json()
+    try:
+        data = {
+            "action": "get_chat_ids",
+            "group_name": group_name
+        }
+        response = requests.post(ALL_BY_USERS_URL, data=data)
+        result = response.json()
         
-    if result.get('success') and 'chat_ids' in result:
-        return result['chat_ids']
-        
-    return []
+        if result.get('success') and 'chat_ids' in result:
+            return result['chat_ids']
+        else:
+            log(f"Помилка отримання користувачів групи {group_name}: {result.get('error')}")
+            return []
+    except Exception as e:
+        log(f"Помилка під час запиту(GetAllUsersByGroup) до PHP сервера: {e}")
+        return []

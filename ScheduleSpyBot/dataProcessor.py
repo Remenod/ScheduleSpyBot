@@ -1,3 +1,4 @@
+from logger import log
 import os
 import subprocess
 import requests
@@ -42,7 +43,9 @@ def LoadWorkbook():
     if response.status_code == 200:        
         return load_workbook(BytesIO(response.content))         
     else:
-        raise Exception(f"Не вдалося завантажити файл. Код помилки: {response.status_code}")
+        text = f"Не вдалося завантажити файл. Код помилки: {response.status_code}"
+        log(text)
+        raise Exception(text)
     
 def GetSchedule(sheet_, columNum = enums.Group.KC242_2.value, rawOutput = False):
     sheet = sheet_
@@ -91,12 +94,13 @@ def CompareSchedules(input1, input2):
                                     text=True,
                                     encoding="utf-8")
         if run_result.returncode != 0:
-            print("Execution Error:", run_result.stderr.strip())
+            log(f"Execution Error:{run_result.stderr.strip()}")
             return None        
         return run_result.stdout.strip()
 
     except FileNotFoundError:
-        print("Error: Compiled executable not found.")
+        log("Error: Compiled executable not found.")
+        raise Exception("Error: Compiled executable not found.")
         return None
 
 def ParseComparerOutput(input):
@@ -107,30 +111,31 @@ def ParseComparerOutput(input):
                                     text=True,
                                     encoding="utf-8")
         if run_result.returncode != 0:
-            print("Execution Error:", run_result.stderr.strip())
+            log(f"Execution Error:{run_result.stderr.strip()}")
             return None        
         return run_result.stdout.strip()
     except FileNotFoundError:
-        print("Error: Compiled executable not found.")
+        log("Error: Compiled executable not found.")
+        raise Exception("Error: Compiled executable not found.")
         return None
 
 def CompareAllGroups():
-    print("checker call")
-    bot.send_message(-1002499863221, "Запускаю перевірку...")
+    log("checker call")
+    log("Запускаю перевірку...")
 
-    bot.send_message(-1002499863221, "Завантажую таблицю з Google API...")
+    log("Завантажую таблицю з Google API...")
     workbook = LoadWorkbook()    
 
     oldWeekName = f"{databaseManager.GetOldSchedule(enums.Group.KC241_1.name)}".split("\n")[0]    
     sameAsOldWeekIndex = 1;
 
-    bot.send_message(-1002499863221, "Перевіряю наявність нового тижня...")
+    log("Перевіряю наявність нового тижня...")
     if(workbook.worksheets[-1].title != oldWeekName):                    
         try:
             while workbook.worksheets[-sameAsOldWeekIndex].title != oldWeekName:
                 sameAsOldWeekIndex += 1
         except IndexError:
-               print("Error: No old week found")
+               log("Error: No old week found")
                return None
         finally:
             users = databaseManager.GetAllUserIds()
@@ -138,9 +143,9 @@ def CompareAllGroups():
                 try:
                     bot.send_message(user, "В розкладі з'явився новий тиждень!")
                 except Exception as e:
-                    print(f"Error sending message to user: {e}")
+                    log(f"Error sending message to user: {e}")
     
-    bot.send_message(-1002499863221, "Перевіряю зміни в кожній групі...")
+    log("Перевіряю зміни в кожній групі...")
     for group in enums.Group:        
         newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group.value)
         oldSchedule = databaseManager.GetOldSchedule(group.name)
@@ -148,16 +153,14 @@ def CompareAllGroups():
         comparerOut = CompareSchedules(oldSchedule, newSchedule)      
         
         if comparerOut != "без змін":
-            print(f"ВИЯВЛЕНІ ЗМІНИ В РОЗКЛАДІ ГРУПИ {group.name}")
-            bot.send_message(-1002499863221, f"ВИЯВЛЕНІ ЗМІНИ В РОЗКЛАДІ ГРУПИ {group.name}")
+            log(f"ВИЯВЛЕНІ ЗМІНИ В РОЗКЛАДІ ГРУПИ {group.name}")            
             allCurrGroupUsers = databaseManager.GetAllUsersByGroup(group.name)            
             if allCurrGroupUsers is not None or len(allCurrGroupUsers) != 0:
                 for user in allCurrGroupUsers:
                     try:
                         bot.send_message(user, f"*В розкладі виявлені зміни:*\n{ParseComparerOutput(comparerOut)}", "Markdown")
                     except Exception as e:
-                        print(f"Error sending message to user: {e}")            
-        else:
-            print(f"Розклад для {group.name} не змінився.")
+                        log(f"Error sending message to user: {e}")
+
         databaseManager.WriteSchedule(group.name, GetSchedule(workbook.worksheets[-1], group.value))
-    bot.send_message(-1002499863221, "Готово")
+    log("Готово")

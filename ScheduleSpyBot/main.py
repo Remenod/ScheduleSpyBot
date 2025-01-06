@@ -1,12 +1,13 @@
 from csAutoCompiler import CompileAll
 CompileAll()
 
-from botBase import bot
-from unIdler import StartUnIdler
 from changesChecker import StartCheckerLoop
+from botBase import bot
+from logger import log
 import botCommands
 
-print("Bot started...")
+log("Bot started...")
 
+# StartCheckerLoop(120)
 
 bot.polling(none_stop=True)

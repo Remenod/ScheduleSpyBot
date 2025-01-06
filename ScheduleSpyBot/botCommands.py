@@ -3,10 +3,12 @@ from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook, ParseComp
 from botBase import bot
 import databaseManager
 from enumerations import Group
+from logger import log, adminPanel
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все")
+    log(f"start call by {message.from_user.first_name}")
+    bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все", message_thread_id=message.message_thread_id)
 
     fullName = None
     if message.from_user.last_name is not None:
@@ -29,10 +31,11 @@ def start(message):
     keyboard.add(button3, button4)
     keyboard.add(button5, button6, button7)
       
-    sent_message = bot.send_message(message.chat.id, "Оберіть групу:", reply_markup=keyboard)
+    sent_message = bot.send_message(message.chat.id, "Оберіть групу:", reply_markup=keyboard, message_thread_id=message.message_thread_id)
 
 @bot.message_handler(commands=['changeGroup'])
 def change_group(message):
+    log(f"change group call by {message.from_user.first_name}")
     fullName = None
     if message.from_user.last_name is not None:
         fullName = f"{message.from_user.first_name} {message.from_user.last_name}"
@@ -54,115 +57,121 @@ def change_group(message):
     keyboard.add(button3, button4)
     keyboard.add(button5, button6, button7)
     
-    sent_message = bot.send_message(message.chat.id, "Оберіть групу іншу:", reply_markup=keyboard)
+    sent_message = bot.send_message(message.chat.id, "Оберіть групу:", reply_markup=keyboard, message_thread_id=message.message_thread_id)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
-    bot.delete_message(call.message.chat.id, call.message.message_id)    
-    bot.send_message(call.message.chat.id, f"Ви обрали групу: {call.data}")
+    bot.delete_message(call.message.chat.id, call.message.message_id)
+    bot.send_message(call.message.chat.id, f"Ви обрали групу: {call.data}", message_thread_id=call.message_thread_id)
 
     databaseManager.UpdateUserGroup(call.from_user.id, call.data)
 
+# Admin only
+
 @bot.message_handler(commands=['print'])
 def send_sheet_data(message):
-    print(f"print call by {message.from_user.first_name}")
-    try:
-        cParts = message.text.split()
-        if len(cParts) != 2:
-            bot.send_message(
-                message.chat.id,"Будь ласка, вкажіть номер аркуша. Наприклад: /print 4")
-            return
+    if message.chat.id == adminPanel.groupId:
+        log(f"print call by {message.from_user.first_name}")
+        try:
+            cParts = message.text.split()
+            if len(cParts) != 2:
+                bot.send_message(message.chat.id, "Будь ласка, вкажіть номер аркуша. Наприклад: /print 4", message_thread_id=message.message_thread_id)
+                return
 
-        if int(cParts[1]) - 1 < 0 or int(cParts[1]) - 1 > 17:
-            raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
+            bot.send_message(message.chat.id, "Почекайте...", message_thread_id=message.message_thread_id)
 
-        bot.send_message(message.chat.id, "Почекайте...")
+            bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], Group.KC241_1.value, False), message_thread_id=message.message_thread_id)      
 
-        bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], Group.KC241_1.value, False))        
-
-
-    except ValueError:
-        bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4")
-    except IndexError:
-        bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.")
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Сталася помилка: {e}")
+        except ValueError:
+            bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4", message_thread_id=message.message_thread_id)
+        except IndexError:
+            bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.", message_thread_id=message.message_thread_id)
+        except Exception as e:
+            log(f"Сталася помилка: {e}", message.message_thread_id)
 
 @bot.message_handler(commands=['compare'])
 def compare(message):
-    print(f"comparator call by {message.from_user.first_name}")
-    try:
-        cParts = message.text.split()
-        if len(cParts) != 3:
-            bot.send_message(message.chat.id, "Будь ласка, вкажіть два номери аркушів для порівняння. Наприклад: /compare 4 5")
-            return
-        if int(cParts[1]) - 1 < 0 or int(cParts[1]) - 1 > 17 or int(cParts[2]) - 1 < 0 or int(cParts[2]) - 1 > 17:
-            raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
+    if message.chat.id == adminPanel.groupId:
+        print(f"comparator call by {message.from_user.first_name}")
+        try:
+            cParts = message.text.split()
+            if len(cParts) != 3:
+                bot.send_message(message.chat.id, "Будь ласка, вкажіть два номери аркушів для порівняння. Наприклад: /compare 4 5", message_thread_id=message.message_thread_id)
+                return
 
-        bot.send_message(message.chat.id, "Почекайте...")
+            bot.send_message(message.chat.id, "Почекайте...", message_thread_id=message.message_thread_id)
 
-        workbook = LoadWorkbook()
-        schedule1 = GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KN24_1.value)
-        schedule2 = GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KN24_1.value)
+            workbook = LoadWorkbook()
+            schedule1 = GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KN24_1.value)
+            schedule2 = GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KN24_1.value)
 
-        bot.send_message(message.chat.id, CompareSchedules(schedule1, schedule2))
+            bot.send_message(message.chat.id, CompareSchedules(schedule1, schedule2))
 
-    except ValueError:
-        bot.send_message(message.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5")
-    except IndexError:
-        bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.")
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Сталася помилка: {e}")
+        except ValueError:
+            bot.send_message(message.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5", message_thread_id=message.message_thread_id)
+        except IndexError:
+            bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.", message_thread_id=message.message_thread_id)
+        except Exception as e:
+            log(f"Сталася помилка: {e}", message.message_thread_id)
 
-@bot.message_handler(commands=['coolCompare'])
+@bot.message_handler(commands=['cool_compare'])
 def coolCompare(message):
-    print(f"coolComparator call by {message.from_user.first_name}")
-    try:
-        cParts = message.text.split()
-        if len(cParts) != 3:
-            bot.send_message(message.chat.id, "Будь ласка, вкажіть два номери аркушів для порівняння. Наприклад: /coolCompare 4 5")
-            return
-        if int(cParts[1]) - 1 < 0 or int(cParts[1]) - 1 > 17 or int(cParts[2]) - 1 < 0 or int(cParts[2]) - 1 > 17:
-            raise IndexError("Номер аркуша виходить за межі допустимого діапазону (1-17).")
+    if message.chat.id == adminPanel.groupId:
+        log(f"coolComparator call by {message.from_user.first_name}")
+        try:
+            cParts = message.text.split()
+            if len(cParts) != 3:
+                bot.send_message(message.chat.id, "Будь ласка, вкажіть два номери аркушів для порівняння. Наприклад: /coolCompare 4 5", message_thread_id=message.message_thread_id)
+                return
 
-        bot.send_message(message.chat.id, "Почекайте...")
+            bot.send_message(message.chat.id, "Почекайте...", message_thread_id=message.message_thread_id)
 
-        workbook = LoadWorkbook()
-        schedule1 = GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KC242_2.value)
-        schedule2 = GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KC242_2.value)
+            workbook = LoadWorkbook()
+            schedule1 = GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KC242_2.value)
+            schedule2 = GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KC242_2.value)
 
-        bot.send_message(message.chat.id, ParseComparerOutput(CompareSchedules(schedule1, schedule2)), parse_mode='Markdown')
+            bot.send_message(message.chat.id, ParseComparerOutput(CompareSchedules(schedule1, schedule2)), parse_mode='Markdown', message_thread_id=message.message_thread_id)
 
-    except ValueError:
-        bot.send_message(message.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5")
-    except IndexError:
-        bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.")
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Сталася помилка: {e}")
+        except ValueError:
+            bot.send_message(message.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5", message_thread_id=message.message_thread_id)
+        except IndexError:
+            bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.", message_thread_id=message.message_thread_id)
+        except Exception as e:
+            log(f"Сталася помилка: {e}", message_thread_id=message.message_thread_id)
 
-# Admin only
-
-@bot.message_handler(commands=['fillScheduleTable'])
+@bot.message_handler(commands=['fill_schedule_table'])
 def fill_group_handler(message):
-    if message.chat.id == -1002499863221:
-        bot.send_message(-1002499863221, "Заповнюю бд...")
-        sheet = LoadWorkbook().worksheets[-2]
-        for group in Group:
-            bot.send_message(-1002499863221, f"Заповнюю групу {group.name}")
-            schedule = GetSchedule(sheet, group.value)            
-            databaseManager.WriteSchedule(group.name, f"{schedule}")
-        bot.send_message(-1002499863221, "Готово")
+    if message.chat.id == adminPanel.groupId:
+        try:
+            cParts = message.text.split()
+            if len(cParts) != 2:
+                bot.send_message(message.chat.id, "Будь ласка, вкажіть номер аркуша. Наприклад: /fill_schedule_table 4", message_thread_id=message.message_thread_id)
+                return
+            log("Заповнюю бд...", message.message_thread_id)
+            sheet = LoadWorkbook().worksheets[cParts[1]]
+            for group in Group:
+                log(f"Заповнюю групу {group.name}", message.message_thread_id)
+                schedule = GetSchedule(sheet, group.value)            
+                databaseManager.WriteSchedule(group.name, f"{schedule}")
+            log("Готово", message.message_thread_id)
 
-@bot.message_handler(commands=['callChecker'])
+        except ValueError:
+            bot.send_message(message.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /fill_schedule_table 4", message.message_thread_id)
+        except IndexError:
+            bot.send_message(message.chat.id, "Немає аркуша з таким номером. Перевірте ще раз.", message.message_thread_id)
+        except Exception as e:
+            log(f"Сталася помилка: {e}", message.message_thread_id)       
+
+@bot.message_handler(commands=['call_checker'])
 def fill_group_handler(message):
-    if message.chat.id == -1002499863221:        
+    if message.chat.id == adminPanel.groupId:   
         CompareAllGroups()               
 
 @bot.message_handler(func=lambda message: True)
 def send(message):
-    if (message.chat.id == -1002499863221 or message.chat.id == 6119344300) and message.text.startswith('$'):
+    if message.chat.id == adminPanel.groupId and message.text.startswith('$'):
         text=message.text.replace('$', '', 1)
         try:            
             exec(text)
         except Exception as e:            
-            bot.send_message(message.chat.id, e)
+            log(e)
