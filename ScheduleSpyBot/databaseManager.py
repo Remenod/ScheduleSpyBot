@@ -75,14 +75,12 @@ def WriteSchedule(sheet_number,subgroup,schedule_data):
     }
     try:
         response = requests.post(SAVE_SCHEDULE_URL,data=data)
-        if response.status_code == 200:            
-            return response.json()
+        if response.status_code == 200:
+            log(f"Schedule writed")    
         else:
-            log("Write Schedule Error:",response.text)
-            return{"error":f"Error{response.status_code}:{response.text}"}
+            log(f"Write Schedule Error:{response.text}")            
     except Exception as e:
-        log(f"Write Schedule Request failed:{e}")
-        return{"error":f"Write Schedule Request failed:{e}"}
+        log(f"Write Schedule Request failed:{e}")        
 
 def GetAllSheetsName():
     try:
