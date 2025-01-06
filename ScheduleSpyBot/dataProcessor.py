@@ -20,7 +20,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly', 'https://www.
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 service = build('sheets', 'v4', credentials=credentials)   
 
-def SendToAllUsers(msg):
+def SendToAllUsers(msg:str):
     try:
         users = databaseManager.GetAllUserIds()
         for user in users:
@@ -135,56 +135,49 @@ def CompareAllGroups():
     log("Завантажую таблицю з Google API...")
     workbook = LoadWorkbook()    
 
+    weekNums = databaseManager.GetAllSheetsNumbers()    
 
+    actualWeekNum = int(weekNums[0])
+    lastWeekNum = int(workbook.worksheets[-1].title.split("т")[0])
+    lastSavedWeekNum = int(weekNums[-1])
 
-
-
-    weekNumes = databaseManager.GetAllSheetsNumbers
-
-    actualWeekNum = weekNumes[0]
-    lastWeekNum = workbook.worksheets[-1].title.split("т")[0]
-
-    sameAsOldWeekIndex = 1;
+    sameAsOldWeekIndex = 1
 
     log("Перевіряю наявність нового тижня...")
-    if(lastWeekNum != actualWeekNum):                    
+    if(lastWeekNum != lastSavedWeekNum):
         try:
-            currWeekNum = lastWeekNum
-            while currWeekNum != actualWeekNum:                
+            currWeekNum = lastWeekNum            
+            while currWeekNum != actualWeekNum:                   
                 sameAsOldWeekIndex += 1
-                currWeekNum = workbook.worksheets[-sameAsOldWeekIndex].title.split("т")[0]
+                currWeekNum = int(workbook.worksheets[-sameAsOldWeekIndex].title.split("т")[0])
+                            
 
         except IndexError:
                log("Error: No old week found")
                return None
 
-        finally:
-            SendToAllUsers(f"В розкладі з'явилось нових тижднів: {sameAsOldWeekIndex-1}")
+        finally:              
+            SendToAllUsers("В розкладі з'явились нові тижні")
+            log("В розкладі з'явились нові тижні")
+            temp = sameAsOldWeekIndex
 
-            sameAsOldWeekIndex -= 1
-
-            while sameAsOldWeekIndex != 1:
+            while (actualWeekNum+temp-1) != actualWeekNum:                
                 for group in enums.Group:
-                    currSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex],group.value)
-                    databaseManager.WriteSchedule(actualWeekNum+sameAsOldWeekIndex-1, group.name, f"{currSchedule}")
+                    currSchedule = GetSchedule(workbook.worksheets[actualWeekNum+temp-2],group.value)
+                    databaseManager.WriteSchedule(actualWeekNum+temp-1, group.name, f"{currSchedule}")
 
-                sameAsOldWeekIndex -= 1
+                temp -= 1
     else:
         log("нових тижнів не знайдено")
-               
-    
-
-
-
-
-
-
+        sameAsOldWeekIndex = lastSavedWeekNum-actualWeekNum+1;
 
 
     log("Перевіряю зміни в кожній групі...")
+    log(f"{actualWeekNum}")
+    log(f"{sameAsOldWeekIndex}")
     for group in enums.Group:
-        newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group.value)
-        oldSchedule = databaseManager.GetOldSchedule(group.name)
+        newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group.value)        
+        oldSchedule = databaseManager.GetOldSchedule(actualWeekNum,group.name)
 
         comparerOut = CompareSchedules(oldSchedule, newSchedule)
         
@@ -198,5 +191,5 @@ def CompareAllGroups():
                     except Exception as e:
                         log(f"Error sending message to user: {e}")
 
-        databaseManager.WriteSchedule(group.name, GetSchedule(workbook.worksheets[-1], group.value))
+        databaseManager.WriteSchedule(actualWeekNum, group.name, newSchedule)
     log("Готово")

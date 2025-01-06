@@ -62,7 +62,7 @@ def change_group(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
-    bot.send_message(call.message.chat.id, f"Ви обрали групу: {call.data}", message_thread_id=call.message_thread_id)
+    bot.send_message(call.message.chat.id, f"Ви обрали групу: {call.data}")
 
     databaseManager.UpdateUserGroup(call.from_user.id, call.data)
 
@@ -148,11 +148,12 @@ def fill_group_handler(message):
                 bot.send_message(message.chat.id, "Будь ласка, вкажіть номер аркуша. Наприклад: /fill_schedule_table 4", message_thread_id=message.message_thread_id)
                 return
             log("Заповнюю бд...", message.message_thread_id)
-            sheet = LoadWorkbook().worksheets[int(cParts[1])]
+            sheet = LoadWorkbook().worksheets[int(cParts[1])-1]
+            sheetWeekNum = sheet.title.split("т")[0]
             for group in Group:
                 log(f"Заповнюю групу {group.name}", message.message_thread_id)
-                schedule = GetSchedule(sheet, group.value)            
-                databaseManager.WriteSchedule(group.name, f"{schedule}")
+                schedule = GetSchedule(sheet, group.value)          
+                databaseManager.WriteSchedule(sheetWeekNum, group.name, f"{schedule}")
             log("Готово", message.message_thread_id)
 
         except ValueError:

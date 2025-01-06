@@ -80,19 +80,19 @@ def GetAllSheetsNumbers():
     except requests.exceptions.RequestException as e:
         return f"Помилка підключення до сервер: {e}"
 
-def DeleteSheet(sheet_number=GetAllSheetsNumbers()[0]):
-    data = {
-        'action':'delete_sheet',
-        'sheet_number':sheet_number
-    }
-    try:
-        response = requests.post(DELETE_SHEET_URL,data=data)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return{"error": "Запит не вдалося виконати. Код відповіді: {}".format(response.status_code)}
-    except requests.exceptions.RequestException as e:
-        return{"error":f"Сталася помилка при виконанні запиту: {str(e)}"}
+# def DeleteSheet(sheet_number=GetAllSheetsNumbers()[0]):
+#     data = {
+#         'action':'delete_sheet',
+#         'sheet_number':sheet_number
+#     }
+#     try:
+#         response = requests.post(DELETE_SHEET_URL,data=data)
+#         if response.status_code == 200:
+#             return response.json()
+#         else:
+#             return{"error": "Запит не вдалося виконати. Код відповіді: {}".format(response.status_code)}
+#     except requests.exceptions.RequestException as e:
+#         return{"error":f"Сталася помилка при виконанні запиту: {str(e)}"}
 
 
 #User management
