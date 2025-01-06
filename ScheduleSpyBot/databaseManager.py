@@ -65,7 +65,7 @@ def GetOldSchedule(subgroup):
         return None
 
 def WriteSchedule(subgroup,schedule_data):
-    print(f"Write Schedule call for {subgroup}")
+    log(f"Write Schedule call for {subgroup}")
     data = {
         "action": "save_schedule",
         "subgroup": subgroup,

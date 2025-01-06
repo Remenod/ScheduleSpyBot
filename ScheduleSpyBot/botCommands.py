@@ -92,7 +92,7 @@ def send_sheet_data(message):
 @bot.message_handler(commands=['compare'])
 def compare(message):
     if message.chat.id == adminPanel.groupId:
-        print(f"comparator call by {message.from_user.first_name}")
+        log(f"comparator call by {message.from_user.first_name}")
         try:
             cParts = message.text.split()
             if len(cParts) != 3:
