@@ -69,7 +69,7 @@ def GetOldSchedule(sheet_number, subgroup):
         log(f"Помилка запиту до PHP: {e}")
         return None
 
-def WriteSchedule(sheet_number,subgroup,schedule_data):    
+def WriteSchedule(sheet_number,subgroup,schedule_data):
     data = {
         "action": "save_schedule",
         "sheet_number":sheet_number,
@@ -87,7 +87,7 @@ def WriteSchedule(sheet_number,subgroup,schedule_data):
         log(f"Write Schedule Request failed:{e}")
         return{"error":f"Write Schedule Request failed:{e}"}
 
-def GetAllSheetsNumber():
+def GetAllSheetsNumbers():
     try:
         response = requests.get(GET_SHEET_NAME_URL)
         if response.status_code == 200:
@@ -97,7 +97,7 @@ def GetAllSheetsNumber():
     except requests.exceptions.RequestException as e:
         return f"Помилка підключення до сервер: {e}"
 
-def DeleteSheet(sheet_number):
+def DeleteSheet(sheet_number=GetAllSheetsNumbers()[0]):
     data = {
         'action':'delete_sheet',
         'sheet_number':sheet_number
