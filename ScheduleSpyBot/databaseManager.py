@@ -1,3 +1,4 @@
+from asyncio.format_helpers import _format_args_and_kwargs
 from urllib import response
 import requests
 from dotenv import load_dotenv
@@ -12,6 +13,7 @@ OLD_SCHEDULE_URL  = os.getenv('OLD_SCHEDULE_URL')
 ALL_BY_USERS_URL  = os.getenv('ALL_BY_USERS_URL')
 SAVE_SCHEDULE_URL = os.getenv('SAVE_SCHEDULE_URL')
 GET_SHEET_NAME_URL = os.getenv('GET_SHEET_NAME')
+DELETE_SHEET_URL = os.getenv('DELETE_SHEET')
 
 
 #Schedule management
@@ -94,6 +96,21 @@ def GetAllSheetsNumber():
             return f"Помилка запиту: статус {response.status_code}"
     except requests.exceptions.RequestException as e:
         return f"Помилка підключення до сервер: {e}"
+
+def DeleteSheet(action, sheet_number=None, schedule_data=None):
+    data = {'action':action}
+    if sheet_number:
+        data['sheet_number'] = sheet_number
+    if schedule_data:
+        data['schedule_data'] = schedule_data
+    try:
+        response = requests.post(DELETE_SHEET_URL,data=data)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return{"error": "Запит не вдалося виконати. Код відповіді: {}".format(response.status_code)}
+    except requests.exceptions.RequestException as e:
+        return{"error":f"Сталася помилка при виконанні запиту: {str(e)}"}
 
 
 #User management
