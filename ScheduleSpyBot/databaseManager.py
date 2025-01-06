@@ -97,12 +97,11 @@ def GetAllSheetsNumber():
     except requests.exceptions.RequestException as e:
         return f"Помилка підключення до сервер: {e}"
 
-def DeleteSheet(action, sheet_number=None, schedule_data=None):
-    data = {'action':action}
-    if sheet_number:
-        data['sheet_number'] = sheet_number
-    if schedule_data:
-        data['schedule_data'] = schedule_data
+def DeleteSheet(sheet_number):
+    data = {
+        'action':'delete_sheet',
+        'sheet_number':sheet_number
+    }
     try:
         response = requests.post(DELETE_SHEET_URL,data=data)
         if response.status_code == 200:
