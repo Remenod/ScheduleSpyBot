@@ -13,4 +13,4 @@ def log(text, threadId = adminPanel.logerThreadId):
         else:
             bot.send_message(adminPanel.groupId, text, message_thread_id=threadId)
     except Exception as e:
-        print(e)
+        print(f"logger error: {e}")

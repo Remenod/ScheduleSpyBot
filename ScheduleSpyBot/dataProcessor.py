@@ -126,7 +126,7 @@ def CompareAllGroups():
     log("Завантажую таблицю з Google API...")
     workbook = LoadWorkbook()    
 
-    oldWeekName = f"{databaseManager.GetOldSchedule(enums.Group.KC241_1.name)}".split("\n")[0]    
+    oldWeekName = f"{databaseManager.GetOldSchedule(enums.Group.KC241_1.name)}".split("\n")[0]
     sameAsOldWeekIndex = 1;
 
     log("Перевіряю наявність нового тижня...")
@@ -145,16 +145,17 @@ def CompareAllGroups():
                 except Exception as e:
                     log(f"Error sending message to user: {e}")
     
+
     log("Перевіряю зміни в кожній групі...")
-    for group in enums.Group:        
+    for group in enums.Group:
         newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group.value)
         oldSchedule = databaseManager.GetOldSchedule(group.name)
 
-        comparerOut = CompareSchedules(oldSchedule, newSchedule)      
+        comparerOut = CompareSchedules(oldSchedule, newSchedule)
         
         if comparerOut != "без змін":
-            log(f"ВИЯВЛЕНІ ЗМІНИ В РОЗКЛАДІ ГРУПИ {group.name}")            
-            allCurrGroupUsers = databaseManager.GetAllUsersByGroup(group.name)            
+            log(f"ВИЯВЛЕНІ ЗМІНИ В РОЗКЛАДІ ГРУПИ {group.name}")
+            allCurrGroupUsers = databaseManager.GetAllUsersByGroup(group.name)
             if allCurrGroupUsers is not None or len(allCurrGroupUsers) != 0:
                 for user in allCurrGroupUsers:
                     try:
