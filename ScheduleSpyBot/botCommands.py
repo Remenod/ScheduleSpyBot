@@ -148,7 +148,7 @@ def fill_group_handler(message):
                 bot.send_message(message.chat.id, "Будь ласка, вкажіть номер аркуша. Наприклад: /fill_schedule_table 4", message_thread_id=message.message_thread_id)
                 return
             log("Заповнюю бд...", message.message_thread_id)
-            sheet = LoadWorkbook().worksheets[cParts[1]]
+            sheet = LoadWorkbook().worksheets[int(cParts[1])]
             for group in Group:
                 log(f"Заповнюю групу {group.name}", message.message_thread_id)
                 schedule = GetSchedule(sheet, group.value)            

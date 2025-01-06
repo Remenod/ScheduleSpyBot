@@ -130,7 +130,7 @@ def CompareAllGroups():
     sameAsOldWeekIndex = 1;
 
     log("Перевіряю наявність нового тижня...")
-    if(workbook.worksheets[-1].title != oldWeekName):                    
+    if(f"{workbook.worksheets[-1].title}" != f"{oldWeekName}"):                    
         try:
             while workbook.worksheets[-sameAsOldWeekIndex].title != oldWeekName:
                 sameAsOldWeekIndex += 1

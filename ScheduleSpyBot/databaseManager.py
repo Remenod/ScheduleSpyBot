@@ -64,8 +64,7 @@ def GetOldSchedule(subgroup):
         log(f"Помилка запиту до PHP: {e}")
         return None
 
-def WriteSchedule(subgroup,schedule_data):
-    log(f"Write Schedule call for {subgroup}")
+def WriteSchedule(subgroup,schedule_data):    
     data = {
         "action": "save_schedule",
         "subgroup": subgroup,
@@ -73,8 +72,7 @@ def WriteSchedule(subgroup,schedule_data):
     }
     try:
         response = requests.post(SAVE_SCHEDULE_URL,data=data)
-        if response.status_code == 200:
-            log("Schedule saved")
+        if response.status_code == 200:            
             return response.json()
         else:
             log("Write Schedule Error:",response.text)
