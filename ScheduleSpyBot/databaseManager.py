@@ -1,7 +1,9 @@
+from urllib import response
 import requests
 from dotenv import load_dotenv
 import os
 from logger import log
+from symbol import return_stmt
 
 load_dotenv('../Secrets/KEYS.env')
 
@@ -10,6 +12,7 @@ USER_IDS_URL      = os.getenv('USER_IDS_URL')
 OLD_SCHEDULE_URL  = os.getenv('OLD_SCHEDULE_URL')
 ALL_BY_USERS_URL  = os.getenv('ALL_BY_USERS_URL')
 SAVE_SCHEDULE_URL = os.getenv('SAVE_SCHEDULE_URL')
+GET_SHEET_NAME_URL = os.getenw('GET_SHEET_NAME')
 
 
 #Schedule management
@@ -80,6 +83,16 @@ def WriteSchedule(subgroup,schedule_data):
     except Exception as e:
         log(f"Write Schedule Request failed:{e}")
         return{"error":f"Write Schedule Request failed:{e}"}
+
+def GetALlSheetName():
+    try:
+        response = requests.get(GET_SHEET_NAME_URL)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return f"Помилка запиту: статус {response.status_code}"
+    except requests.exceptions.RequestException as e:
+        return f"Помилка підключення до сервер: {e}"
 
 
 #User management
