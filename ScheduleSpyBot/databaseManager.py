@@ -66,10 +66,10 @@ def GetOldSchedule(subgroup):
         log(f"Помилка запиту до PHP: {e}")
         return None
 
-def WriteSchedule(sheet_name,subgroup,schedule_data):    
+def WriteSchedule(sheet_number,subgroup,schedule_data):    
     data = {
         "action": "save_schedule",
-        "sheet_name":sheet_name,
+        "sheet_number":sheet_number,
         "subgroup": subgroup,
         "schedule_data": schedule_data
     }
