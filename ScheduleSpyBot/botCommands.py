@@ -1,5 +1,5 @@
 import telebot
-from dataProcessor import GetSchedule, CompareSchedules, LoadWorkbook, ParseComparerOutput, CompareAllGroups
+import dataProcessor
 from botBase import bot
 import databaseManager
 from enumerations import Group
@@ -68,6 +68,26 @@ def callback_handler(call):
 
 # Admin only
 
+@bot.message_handler(commands=['delete_week'])
+def delete_week(message):
+    if message.chat.id == adminPanel.groupId:        
+        try:
+            cParts = message.text.split()
+            if len(cParts) == 2:
+                databaseManager.DeleteSheet(cParts[1])
+            elif len(cParts) == 2:
+                databaseManager.DeleteSheet()
+            else:
+                bot.send_message(message.chat.id, "Будь ласка, вкажіть номер тижня. Наприклад: /delete_week 4", message_thread_id=message.message_thread_id)
+                return           
+
+        except ValueError:
+            bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер тижня. Наприклад: /delete_week 4", message_thread_id=message.message_thread_id)
+        except IndexError:
+            bot.send_message(message.chat.id, "Немає тижня з таким номером. Перевірте ще раз.", message_thread_id=message.message_thread_id)
+        except Exception as e:
+            log(f"Сталася помилка: {e}", message.message_thread_id)
+
 @bot.message_handler(commands=['print'])
 def send_sheet_data(message):
     if message.chat.id == adminPanel.groupId:
@@ -80,7 +100,7 @@ def send_sheet_data(message):
 
             bot.send_message(message.chat.id, "Почекайте...", message_thread_id=message.message_thread_id)
 
-            bot.send_message(message.chat.id, GetSchedule(LoadWorkbook().worksheets[int(cParts[1]) - 1], Group.KC241_1.value, False), message_thread_id=message.message_thread_id)      
+            bot.send_message(message.chat.id, dataProcessor.GetSchedule(dataProcessor.LoadWorkbook().worksheets[int(cParts[1]) - 1], Group.KC241_1.value, False), message_thread_id=message.message_thread_id)      
 
         except ValueError:
             bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4", message_thread_id=message.message_thread_id)
@@ -101,11 +121,11 @@ def compare(message):
 
             bot.send_message(message.chat.id, "Почекайте...", message_thread_id=message.message_thread_id)
 
-            workbook = LoadWorkbook()
-            schedule1 = GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KN24_1.value)
-            schedule2 = GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KN24_1.value)
+            workbook = dataProcessor.LoadWorkbook()
+            schedule1 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KN24_1.value)
+            schedule2 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KN24_1.value)
 
-            bot.send_message(message.chat.id, CompareSchedules(schedule1, schedule2))
+            bot.send_message(message.chat.id, dataProcessor.CompareSchedules(schedule1, schedule2))
 
         except ValueError:
             bot.send_message(message.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5", message_thread_id=message.message_thread_id)
@@ -126,11 +146,11 @@ def coolCompare(message):
 
             bot.send_message(message.chat.id, "Почекайте...", message_thread_id=message.message_thread_id)
 
-            workbook = LoadWorkbook()
-            schedule1 = GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KC242_2.value)
-            schedule2 = GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KC242_2.value)
+            workbook = dataProcessor.LoadWorkbook()
+            schedule1 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KC242_2.value)
+            schedule2 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KC242_2.value)
 
-            bot.send_message(message.chat.id, ParseComparerOutput(CompareSchedules(schedule1, schedule2)), parse_mode='Markdown', message_thread_id=message.message_thread_id)
+            bot.send_message(message.chat.id, dataProcessor.ParseComparerOutput(dataProcessor.CompareSchedules(schedule1, schedule2)), parse_mode='Markdown', message_thread_id=message.message_thread_id)
 
         except ValueError:
             bot.send_message(message.chat.id, "Будь ласка, введіть коректні номери аркушів для порівняння. Наприклад: /compare 4 5", message_thread_id=message.message_thread_id)
@@ -148,11 +168,11 @@ def fill_group_handler(message):
                 bot.send_message(message.chat.id, "Будь ласка, вкажіть номер аркуша. Наприклад: /fill_schedule_table 4", message_thread_id=message.message_thread_id)
                 return
             log("Заповнюю бд...", message.message_thread_id)
-            sheet = LoadWorkbook().worksheets[int(cParts[1])-1]
+            sheet = dataProcessor.LoadWorkbook().worksheets[int(cParts[1])-1]
             sheetWeekNum = sheet.title.split("т")[0]
             for group in Group:
                 log(f"Заповнюю групу {group.name}", message.message_thread_id)
-                schedule = GetSchedule(sheet, group.value)          
+                schedule = dataProcessor.GetSchedule(sheet, group.value)          
                 databaseManager.WriteSchedule(sheetWeekNum, group.name, f"{schedule}")
             log("Готово", message.message_thread_id)
 
@@ -166,7 +186,7 @@ def fill_group_handler(message):
 @bot.message_handler(commands=['call_checker'])
 def fill_group_handler(message):
     if message.chat.id == adminPanel.groupId:   
-        CompareAllGroups()               
+        dataProcessor.CompareAllGroups()               
 
 @bot.message_handler(func=lambda message: True)
 def send(message):
