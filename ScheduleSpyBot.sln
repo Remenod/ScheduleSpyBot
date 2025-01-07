@@ -19,6 +19,8 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ScheduleSpyBot", "ScheduleS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{75C4FDB4-AB70-426F-8EAE-F455FA3BB156}"
 	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
 		requirements.txt = requirements.txt
 	EndProjectSection
 EndProject

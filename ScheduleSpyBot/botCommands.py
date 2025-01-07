@@ -201,10 +201,13 @@ def send(message):
     # notifiers        
     elif message.chat.id == adminPanel.groupId and message.message_thread_id in [item.value for item in Notifier]:
 
-        group = notifierToGroup.get(Notifier(message.message_thread_id))
+        if Notifier(message.message_thread_id) != Notifier.general:
+            group = notifierToGroup.get(Notifier(message.message_thread_id))
+            users = databaseManager.GetAllUsersByGroup(group)   
+        else:            
+            users = databaseManager.GetAllUserIds()
 
-        if group:            
-            users = databaseManager.GetAllUsersByGroup(group)
+        if users:
             for user in users:
                 try:                                                           
                     if message.content_type == 'text':

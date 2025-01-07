@@ -26,6 +26,7 @@ class Notifier(Enum):
     KN24_1  = 4657
     KN24_2  = 4658
     KT24    = 4659
+    general = 4709
 
 notifierToGroup = {
 Notifier.KC241_1: Group.KC241_1,
