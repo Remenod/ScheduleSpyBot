@@ -1,5 +1,5 @@
 from csAutoCompiler import CompileAll
-# CompileAll()
+CompileAll()
 
 from changesChecker import StartCheckerLoop
 from botBase import bot

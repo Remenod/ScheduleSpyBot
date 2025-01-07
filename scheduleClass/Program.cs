@@ -62,13 +62,8 @@ namespace scheduleClass
                 couple7 == "без змін";
             public IEnumerator GetEnumerator()
             {
-                yield return couple1;
-                yield return couple2;
-                yield return couple3;
-                yield return couple4;
-                yield return couple5;
-                yield return couple6;
-                yield return couple7;
+                for (var i = 0; i < 6; i++)
+                    yield return this[i];
             }
 
             public string this[int index]
