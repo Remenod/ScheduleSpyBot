@@ -2,7 +2,7 @@ import telebot
 import dataProcessor
 from botBase import bot
 import databaseManager
-from enumerations import Group
+from enumerations import Group, Notifier, notifierToGroup
 from logger import log, adminPanel
 
 @bot.message_handler(commands=['start'])
@@ -188,11 +188,45 @@ def fill_group_handler(message):
     if message.chat.id == adminPanel.groupId:   
         dataProcessor.CompareAllGroups()               
 
-@bot.message_handler(func=lambda message: True)
+@bot.message_handler(func=lambda message: True, content_types=['text', 'photo', 'video', 'audio', 'document', 'sticker', 'voice', 'location', 'contact', 'animation'])
 def send(message):
-    if message.chat.id == adminPanel.groupId and message.text.startswith('$'):
+    # debuger
+    if message.chat.id == adminPanel.groupId and message.content_type == 'text' and message.text.startswith('$'):
         text=message.text.replace('$', '', 1)
         try:            
             exec(text)
         except Exception as e:            
             log(e)
+
+    # notifiers        
+    elif message.chat.id == adminPanel.groupId and message.message_thread_id in [item.value for item in Notifier]:
+
+        group = notifierToGroup.get(Notifier(message.message_thread_id))
+
+        if group:            
+            users = databaseManager.GetAllUsersByGroup(group.name)
+            for user in users:
+                try:                                                           
+                    if message.content_type == 'text':
+                        bot.send_message(chat_id=user, text=message.text)                    
+                    elif message.content_type == 'sticker':
+                        bot.send_sticker(chat_id=user, sticker=message.sticker.file_id)
+                    elif message.content_type == 'video':
+                        bot.send_video(chat_id=user, video=message.video.file_id, caption=message.caption or "")
+                    elif message.content_type == 'audio':
+                        bot.send_audio(chat_id=user, audio=message.audio.file_id, caption=message.caption or "")
+                    elif message.content_type == 'voice':
+                        bot.send_voice(chat_id=user, voice=message.voice.file_id, caption=message.caption or "")
+                    elif message.content_type == 'photo':
+                        bot.send_photo(chat_id=user, photo=message.photo[-1].file_id, caption=message.caption or "")
+                    elif message.content_type == 'document':
+                        bot.send_document(chat_id=user, document=message.document.file_id, caption=message.caption or "")
+                    elif message.content_type == 'animation':
+                        bot.send_animation(chat_id=user, animation=message.animation.file_id, caption=message.caption or "")
+                    else:
+                        log(f"Тип повідомлення {message.content_type} не підтримується.")
+
+                except Exception as e:
+                    log(f"Сталася помилка: {e}")
+        else:
+            log(f"Сталася помилка. Группу для масового сповіщення не знайдено")

@@ -18,4 +18,22 @@ class Group(Enum):
     KN24_2  = 'H'
     KT24    = 'I'
 
+class Notifier(Enum):
+    KC241_1 = 4648
+    KC241_2 = 4652
+    KC242_1 = 4655
+    KC242_2 = 4656
+    KN24_1  = 4657
+    KN24_2  = 4658
+    KT24    = 4659
+
+notifierToGroup = {
+Notifier.KC241_1: Group.KC241_1,
+Notifier.KC241_2: Group.KC241_2,
+Notifier.KC242_1: Group.KC242_1,
+Notifier.KC242_2: Group.KC242_2,
+Notifier.KN24_1 : Group.KN24_1,
+Notifier.KN24_2 : Group.KN24_2,
+Notifier.KT24   : Group.KT24}
+
 
