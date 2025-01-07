@@ -75,7 +75,7 @@ def delete_week(message):
             cParts = message.text.split()
             if len(cParts) == 2:
                 databaseManager.DeleteSheet(cParts[1])
-            elif len(cParts) == 2:
+            elif len(cParts) == 1:
                 databaseManager.DeleteSheet()
             else:
                 bot.send_message(message.chat.id, "Будь ласка, вкажіть номер тижня. Наприклад: /delete_week 4", message_thread_id=message.message_thread_id)
