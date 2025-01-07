@@ -5,7 +5,7 @@ from collections import namedtuple
 adminGroupData = namedtuple("adminGroupData", ['groupId','logerThreadId','commandPlaceThreadId'])
 adminPanel = adminGroupData(-1002499863221, 2749, 2751)
 
-def log(text, threadId = adminPanel.logerThreadId):
+def log(text:str, threadId:int = adminPanel.logerThreadId):
     print(text)
     try:        
         if(threadId == adminPanel.logerThreadId):

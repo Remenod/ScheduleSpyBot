@@ -1,10 +1,10 @@
 from csAutoCompiler import CompileAll
 CompileAll()
 
-from changesChecker import StartCheckerLoop
-from botBase import bot
-from logger import log
 import botCommands
+from logger import log
+from botBase import bot
+from changesChecker import StartCheckerLoop
 
 log("Bot started...")
 

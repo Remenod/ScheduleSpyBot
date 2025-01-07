@@ -1,15 +1,15 @@
-from logger import log
 import os
-import subprocess
 import requests
-from dotenv import load_dotenv
-from googleapiclient.discovery import build
-from openpyxl import load_workbook
-from google.oauth2.service_account import Credentials
-from io import BytesIO
-import enumerations as enums
-from botBase import bot
+import subprocess
 import databaseManager
+from logger import log
+from io import BytesIO
+from botBase import bot
+from enumerations import Group
+from dotenv import load_dotenv
+from openpyxl import load_workbook
+from googleapiclient.discovery import build
+from google.oauth2.service_account import Credentials
 
 load_dotenv(dotenv_path=r'../Secrets/KEYS.env')
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
@@ -29,7 +29,7 @@ def SendToAllUsers(msg:str):
     except Exception as e:
          log(f"Error sending message to user: {e}")
 
-def GetRightLines(value):
+def GetRightLines(value:str):
     if isinstance(value, str):
         lines = value.split("\n")
         subjectLine = next((line for line in lines if line.strip()), None)
@@ -56,12 +56,12 @@ def LoadWorkbook():
         log(text)
         raise Exception(text)
     
-def GetSchedule(sheet_, columNum = enums.Group.KC242_2.value, rawOutput = False):
+def GetSchedule(sheet_, columNum:Group, rawOutput:bool = False):
     sheet = sheet_
     output = f"{sheet.title}\n"
     row = 1
     while row <= sheet.max_row:
-        cell = sheet[f"{columNum}{row}"]
+        cell = sheet[f"{columNum.value}{row}"]
 
         if cell.coordinate in sheet.merged_cells:        
             for merged_range in sheet.merged_cells.ranges:
@@ -95,7 +95,7 @@ def GetSchedule(sheet_, columNum = enums.Group.KC242_2.value, rawOutput = False)
             row += 2
     return output
 
-def CompareSchedules(input1, input2):
+def CompareSchedules(input1:str, input2:str):
     dll_path = os.path.join("../comparer", "bin", "Debug", "net8.0", "comparer.dll")       
     try:
         run_result = subprocess.run(["dotnet", dll_path, input1, input2],
@@ -112,7 +112,7 @@ def CompareSchedules(input1, input2):
         raise Exception("Error: Compiled executable not found.")
         return None
 
-def ParseComparerOutput(input):
+def ParseComparerOutput(input:str):
     dll_path = os.path.join("../parser", "bin", "Debug", "net8.0", "parser.dll")       
     try:
         run_result = subprocess.run(["dotnet", dll_path, input],
@@ -162,9 +162,9 @@ def CompareAllGroups():
             temp = sameAsOldWeekIndex
 
             while (actualWeekNum+temp-1) != actualWeekNum:                
-                for group in enums.Group:
-                    currSchedule = GetSchedule(workbook.worksheets[actualWeekNum+temp-2],group.value)
-                    databaseManager.WriteSchedule(actualWeekNum+temp-1, group.name, f"{currSchedule}")
+                for group in Group:
+                    currSchedule = GetSchedule(workbook.worksheets[actualWeekNum+temp-2],group)
+                    databaseManager.WriteSchedule(actualWeekNum+temp-1, group, f"{currSchedule}")
 
                 temp -= 1
     else:
@@ -175,15 +175,15 @@ def CompareAllGroups():
     log("Перевіряю зміни в кожній групі...")
     log(f"{actualWeekNum}")
     log(f"{sameAsOldWeekIndex}")
-    for group in enums.Group:
-        newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group.value)        
-        oldSchedule = databaseManager.GetOldSchedule(actualWeekNum,group.name)
+    for group in Group:
+        newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group)        
+        oldSchedule = databaseManager.GetOldSchedule(actualWeekNum,group)
 
         comparerOut = CompareSchedules(oldSchedule, newSchedule)
         
         if comparerOut != "без змін":
             log(f"ВИЯВЛЕНІ ЗМІНИ В РОЗКЛАДІ ГРУПИ {group.name}")
-            allCurrGroupUsers = databaseManager.GetAllUsersByGroup(group.name)
+            allCurrGroupUsers = databaseManager.GetAllUsersByGroup(group)
             if allCurrGroupUsers is not None or len(allCurrGroupUsers) != 0:
                 for user in allCurrGroupUsers:
                     try:
@@ -191,5 +191,5 @@ def CompareAllGroups():
                     except Exception as e:
                         log(f"Error sending message to user: {e}")
 
-        databaseManager.WriteSchedule(actualWeekNum, group.name, newSchedule)
+        databaseManager.WriteSchedule(actualWeekNum, group, newSchedule)
     log("Готово")

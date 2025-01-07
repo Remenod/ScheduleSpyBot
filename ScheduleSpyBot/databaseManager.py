@@ -1,7 +1,9 @@
-import requests
-from dotenv import load_dotenv
 import os
+import requests
 from logger import log
+from dotenv import load_dotenv
+from enumerations import Group
+
 
 load_dotenv('../Secrets/KEYS.env')
 
@@ -16,7 +18,7 @@ DELETE_SHEET_URL   = os.getenv('DELETE_SHEET')
 
 #Schedule management
 
-def GetScheduleFromDB(week_number):
+def GetScheduleFromDB(week_number:int):
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'get_schedule',
@@ -32,10 +34,10 @@ def GetScheduleFromDB(week_number):
         log(f"Помилка отримання розкладу через PHP API: {e}")
         return None
 
-def GetOldSchedule(sheet_number, subgroup):
+def GetOldSchedule(sheet_number:int, subgroup:Group):
     data = {
         "action":"get_schedule",
-        "subgroup_name": subgroup,
+        "subgroup_name": subgroup.name,
         "sheet_number": sheet_number
     }
     try:
@@ -52,11 +54,11 @@ def GetOldSchedule(sheet_number, subgroup):
         log(f"Помилка запиту до PHP: {e}")
         return None
 
-def WriteSchedule(sheet_number,subgroup,schedule_data):
+def WriteSchedule(sheet_number:int,subgroup:Group,schedule_data:str):
     data = {
         "action": "save_schedule",
         "sheet_number":sheet_number,
-        "subgroup": subgroup,
+        "subgroup": subgroup.name,
         "schedule_data": schedule_data
     }
     try:
@@ -80,7 +82,7 @@ def GetAllSheetsNumbers():
     except requests.exceptions.RequestException as e:
         return f"Помилка підключення до сервер: {e}"
 
-def DeleteSheet(sheet_number=GetAllSheetsNumbers()[0]):
+def DeleteSheet(sheet_number:int = GetAllSheetsNumbers()[0]):
     data = {
         'action':'delete_sheet',
         'sheet_number':sheet_number
@@ -97,7 +99,7 @@ def DeleteSheet(sheet_number=GetAllSheetsNumbers()[0]):
 
 #User management
 
-def SaveUser(chat_id, full_name, username):
+def SaveUser(chat_id:int|str, full_name:str, username:str):
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'save_user',
@@ -113,7 +115,7 @@ def SaveUser(chat_id, full_name, username):
     except Exception as e:
         log(f"Помилка збереження користувача через PHP API: {e}")
 
-def UpdateUserGroup(chat_id, group_name):
+def UpdateUserGroup(chat_id:int|str, group_name):
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'update_group',
@@ -128,7 +130,7 @@ def UpdateUserGroup(chat_id, group_name):
     except Exception as e:
         log(f"Помилка оновлення групи через PHP API: {e}")
 
-def GetUserInfo(chat_id):
+def GetUserInfo(chat_id:int|str):
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'get_user',
@@ -158,11 +160,11 @@ def GetAllUserIds():
         log(f"Помилка під час запиту(GetAllUserIds) до PHP сервера: {e}")
         return []
 
-def GetAllUsersByGroup(group_name):
+def GetAllUsersByGroup(group:Group):
     try:
         data = {
             "action": "get_chat_ids",
-            "group_name": group_name
+            "group_name": group.name
         }
         response = requests.post(ALL_BY_USERS_URL, data=data)
         result = response.json()
@@ -170,7 +172,7 @@ def GetAllUsersByGroup(group_name):
         if result.get('success') and 'chat_ids' in result:
             return result['chat_ids']
         else:
-            log(f"Помилка отримання користувачів групи {group_name}: {result.get('error')}")
+            log(f"Помилка отримання користувачів групи {group.name}: {result.get('error')}")
             return []
     except Exception as e:
         log(f"Помилка під час запиту(GetAllUsersByGroup) до PHP сервера: {e}")

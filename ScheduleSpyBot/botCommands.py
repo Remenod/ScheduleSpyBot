@@ -1,9 +1,9 @@
 import telebot
 import dataProcessor
-from botBase import bot
 import databaseManager
-from enumerations import Group, Notifier, notifierToGroup
+from botBase import bot
 from logger import log, adminPanel
+from enumerations import Group, Notifier, notifierToGroup
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -100,7 +100,7 @@ def send_sheet_data(message):
 
             bot.send_message(message.chat.id, "Почекайте...", message_thread_id=message.message_thread_id)
 
-            bot.send_message(message.chat.id, dataProcessor.GetSchedule(dataProcessor.LoadWorkbook().worksheets[int(cParts[1]) - 1], Group.KC241_1.value, False), message_thread_id=message.message_thread_id)      
+            bot.send_message(message.chat.id, dataProcessor.GetSchedule(dataProcessor.LoadWorkbook().worksheets[int(cParts[1]) - 1], Group.KC241_1, False), message_thread_id=message.message_thread_id)      
 
         except ValueError:
             bot.send_message(message.chat.id, "Будь ласка, введіть коректний номер аркуша. Наприклад: /print 4", message_thread_id=message.message_thread_id)
@@ -122,8 +122,8 @@ def compare(message):
             bot.send_message(message.chat.id, "Почекайте...", message_thread_id=message.message_thread_id)
 
             workbook = dataProcessor.LoadWorkbook()
-            schedule1 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KN24_1.value)
-            schedule2 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KN24_1.value)
+            schedule1 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KN24_1)
+            schedule2 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KN24_1)
 
             bot.send_message(message.chat.id, dataProcessor.CompareSchedules(schedule1, schedule2))
 
@@ -147,8 +147,8 @@ def coolCompare(message):
             bot.send_message(message.chat.id, "Почекайте...", message_thread_id=message.message_thread_id)
 
             workbook = dataProcessor.LoadWorkbook()
-            schedule1 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KC242_2.value)
-            schedule2 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KC242_2.value)
+            schedule1 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[1]) - 1], Group.KC242_2)
+            schedule2 = dataProcessor.GetSchedule(workbook.worksheets[int(cParts[2]) - 1], Group.KC242_2)
 
             bot.send_message(message.chat.id, dataProcessor.ParseComparerOutput(dataProcessor.CompareSchedules(schedule1, schedule2)), parse_mode='Markdown', message_thread_id=message.message_thread_id)
 
@@ -172,8 +172,8 @@ def fill_group_handler(message):
             sheetWeekNum = sheet.title.split("т")[0]
             for group in Group:
                 log(f"Заповнюю групу {group.name}", message.message_thread_id)
-                schedule = dataProcessor.GetSchedule(sheet, group.value)          
-                databaseManager.WriteSchedule(sheetWeekNum, group.name, f"{schedule}")
+                schedule = dataProcessor.GetSchedule(sheet, group)          
+                databaseManager.WriteSchedule(sheetWeekNum, group, f"{schedule}")
             log("Готово", message.message_thread_id)
 
         except ValueError:
@@ -204,7 +204,7 @@ def send(message):
         group = notifierToGroup.get(Notifier(message.message_thread_id))
 
         if group:            
-            users = databaseManager.GetAllUsersByGroup(group.name)
+            users = databaseManager.GetAllUsersByGroup(group)
             for user in users:
                 try:                                                           
                     if message.content_type == 'text':
