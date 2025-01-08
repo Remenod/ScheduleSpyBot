@@ -44,7 +44,7 @@ def change_group(message):
     keyboard.add(button3, button4)
     keyboard.add(button5, button6, button7)
     
-    sent_message = bot.send_message(message.chat.id, "Обери групу за розкладом якої ти хочиш слідкувати:", reply_markup=keyboard, message_thread_id=message.message_thread_id)
+    sent_message = bot.send_message(message.chat.id, "Обери групу за розкладом якої ти хочеш слідкувати:", reply_markup=keyboard, message_thread_id=message.message_thread_id)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
@@ -52,6 +52,18 @@ def callback_handler(call):
     bot.send_message(call.message.chat.id, f"Ви обрали групу: {call.data}")
 
     databaseManager.UpdateUserGroup(call.from_user.id, call.data)
+
+@bot.message_handler(commands=['help'])
+def helpComm(message):
+    log(f"help call by {message.from_user.first_name}")
+    bot.send_message(message.chat.id, 
+                     "Список доступних комманд:\n"
+                     "/start - вивести стартове повідомлення.\n"
+                     "/changeGroup - змінити групу за розкладом якої ти хочеш слідкувати.\n"
+                     "/schedule - вивести способи перегляду розкладу.\n"
+                     "/about - вивести інформацію про бота.\n"
+                     "/help - вивести цей список.\n",                     
+                     message_thread_id=message.message_thread_id)
 
 @bot.message_handler(commands=['about'])
 def about(message):
