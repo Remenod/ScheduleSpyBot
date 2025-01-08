@@ -1,4 +1,6 @@
 import os
+import openpyxl
+import openpyxl.workbook
 import requests
 import subprocess
 import databaseManager
@@ -7,7 +9,6 @@ from io import BytesIO
 from botBase import bot
 from enumerations import Group
 from dotenv import load_dotenv
-from openpyxl import load_workbook
 from googleapiclient.discovery import build
 from google.oauth2.service_account import Credentials
 
@@ -29,34 +30,32 @@ def SendToAllUsers(msg:str):
     except Exception as e:
          log(f"Error sending message to user: {e}")
 
-def GetRightLines(value:str):
-    if isinstance(value, str):
-        lines = value.split("\n")
-        subjectLine = next((line for line in lines if line.strip()), None)
-        auditoriumLine = next(
-            (line for line in lines if line.strip().startswith("а.") or 
-             line.strip().startswith("Наукова бібліотека")), None)
-        if subjectLine is not None:
-            if auditoriumLine is not None:
-                return f"{subjectLine} $[]{auditoriumLine}"
-            else:
-                return f"{subjectLine}"
+def GetRightLines(value:str) -> str:
+    lines = value.split("\n")
+    subjectLine = next((line for line in lines if line.strip()), None)
+    auditoriumLine = next(
+        (line for line in lines if line.strip().startswith("а.") or 
+            line.strip().startswith("Наукова бібліотека")), None)
+    if subjectLine is not None:
+        if auditoriumLine is not None:
+            return f"{subjectLine} $[]{auditoriumLine}"
         else:
-            return "помилка обробки розкладу"
+            return f"{subjectLine}"
+    else:
+        return "помилка обробки розкладу"
     return value
 
-def LoadWorkbook():
+def LoadWorkbook() -> openpyxl.workbook.workbook.Workbook:
     export_url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/export?format=xlsx"
     headers = {"Authorization": f"Bearer {credentials.token}"}
     response = requests.get(export_url, headers=headers)
     if response.status_code == 200:        
-        return load_workbook(BytesIO(response.content))         
+        return openpyxl.load_workbook(BytesIO(response.content))         
     else:
         text = f"Не вдалося завантажити файл. Код помилки: {response.status_code}"
-        log(text)
-        raise Exception(text)
+        log(text)        
     
-def GetSchedule(sheet_, columNum:Group, rawOutput:bool = False):
+def GetSchedule(sheet_, columNum:Group, rawOutput:bool = False) -> str:
     sheet = sheet_
     output = f"{sheet.title}\n"
     row = 1
@@ -95,7 +94,7 @@ def GetSchedule(sheet_, columNum:Group, rawOutput:bool = False):
             row += 2
     return output
 
-def CompareSchedules(input1:str, input2:str):
+def CompareSchedules(input1:str, input2:str) -> str:
     dll_path = os.path.join("../comparer", "bin", "Debug", "net8.0", "comparer.dll")       
     try:
         run_result = subprocess.run(["dotnet", dll_path, input1, input2],
@@ -112,7 +111,7 @@ def CompareSchedules(input1:str, input2:str):
         raise Exception("Error: Compiled executable not found.")
         return None
 
-def ParseComparerOutput(input:str):
+def ParseComparerOutput(input:str) -> str:
     dll_path = os.path.join("../parser", "bin", "Debug", "net8.0", "parser.dll")       
     try:
         run_result = subprocess.run(["dotnet", dll_path, input],
