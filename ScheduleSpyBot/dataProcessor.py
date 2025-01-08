@@ -171,7 +171,7 @@ def CompareAllGroups():
                return None
 
         finally:              
-            SendToAllUsers("В розкладі з'явились нові тижні")
+            SendToAllUsers("В розкладі з'явився новий тиждень.\n Для перегляду можете скористатися командою /schedule")
             log("В розкладі з'явились нові тижні")
             temp = sameAsOldWeekIndex
 
@@ -202,6 +202,7 @@ def CompareAllGroups():
                 for user in allCurrGroupUsers:
                     try:
                         bot.send_message(user, f"*В розкладі виявлені зміни:*\n{ParseComparerOutput(comparerOut)}", "Markdown")
+                        bot.send_message(user, f"Для перегляду можете скористатися командою /schedule")
                     except Exception as e:
                         log(f"Error sending message to user: {e}")
 

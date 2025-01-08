@@ -74,11 +74,15 @@ def schedule(message):
     markup = telebot.types.InlineKeyboardMarkup()    
     currWeekNum = databaseManager.GetAllSheetsNumbers()[0]
     currWeekGid = dataProcessor.GetSheetGids()[int(currWeekNum)-1] or 1
-    button = telebot.types.InlineKeyboardButton(text="Відкрити розклад", web_app=telebot.types.WebAppInfo(url=
+    button = telebot.types.InlineKeyboardButton(text="Відкрити розклад (URL)", url=
+                                                    f"https://docs.google.com/spreadsheets/u/0/d/{SPREADSHEET_ID}"
+                                                    f"/htmlview?output=html&rm=demo&pli=1&widget=true&gid={currWeekGid}#gid={currWeekGid}")
+    button1 = telebot.types.InlineKeyboardButton(text="Відкрити розклад", web_app=telebot.types.WebAppInfo(url=
                                                     f"https://docs.google.com/spreadsheets/u/0/d/{SPREADSHEET_ID}"
                                                     f"/htmlview?output=html&rm=demo&pli=1&widget=true&gid={currWeekGid}#gid={currWeekGid}"))
     markup.add(button)
-    bot.send_message(message.chat.id, "Відкрити розклад на актуальній сторінці", reply_markup=markup)
+    markup.add(button1)
+    bot.send_message(message.chat.id, "Ось розклад на актуальній сторінці", reply_markup=markup)
 
 
 # Admin only
