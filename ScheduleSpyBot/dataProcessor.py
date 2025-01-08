@@ -127,7 +127,7 @@ def ParseComparerOutput(input:str) -> str:
         raise Exception("Error: Compiled executable not found.")
         return None
 
-def CompareAllGroups():    
+def CompareAllGroups():
     log("Запускаю перевірку...")
 
     log("Завантажую таблицю з Google API...")

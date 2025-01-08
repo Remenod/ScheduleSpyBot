@@ -10,7 +10,8 @@ def start(message):
     log(f"start call by {message.from_user.first_name}")
     bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все", message_thread_id=message.message_thread_id)
 
-    change_group(message)
+    if databaseManager.GetUserInfo(message.from_user.id)['group_name']=="":
+        change_group(message)
 
 @bot.message_handler(commands=['changeGroup'])
 def change_group(message):
