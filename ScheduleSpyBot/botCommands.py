@@ -10,28 +10,7 @@ def start(message):
     log(f"start call by {message.from_user.first_name}")
     bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все", message_thread_id=message.message_thread_id)
 
-    fullName = None
-    if message.from_user.last_name is not None:
-        fullName = f"{message.from_user.first_name} {message.from_user.last_name}"
-    else:
-        fullName = message.from_user.first_name
-
-    databaseManager.SaveUser(message.from_user.id, fullName, message.from_user.username)
-
-    keyboard = telebot.types.InlineKeyboardMarkup()
-    button1 = telebot.types.InlineKeyboardButton("КС241_1", callback_data=f"{Group.KC241_1.name}")
-    button2 = telebot.types.InlineKeyboardButton("КС241_2", callback_data=f"{Group.KC241_2.name}")
-    button3 = telebot.types.InlineKeyboardButton("КС242_1", callback_data=f"{Group.KC242_1.name}")
-    button4 = telebot.types.InlineKeyboardButton("КС242_2", callback_data=f"{Group.KC242_2.name}")
-    button5 = telebot.types.InlineKeyboardButton("КН24_1",  callback_data=f"{Group.KN24_1.name}")
-    button6 = telebot.types.InlineKeyboardButton("КН24_2",  callback_data=f"{Group.KN24_2.name}")
-    button7 = telebot.types.InlineKeyboardButton("КТ24",    callback_data=f"{Group.KT24.name}")
-        
-    keyboard.add(button1, button2)
-    keyboard.add(button3, button4)
-    keyboard.add(button5, button6, button7)
-      
-    sent_message = bot.send_message(message.chat.id, "Оберіть групу:", reply_markup=keyboard, message_thread_id=message.message_thread_id)
+    change_group(message)
 
 @bot.message_handler(commands=['changeGroup'])
 def change_group(message):
