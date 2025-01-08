@@ -185,13 +185,14 @@ def fill_group_handler(message):
 
 @bot.message_handler(commands=['call_checker'])
 def fill_group_handler(message):
-    if message.chat.id == adminPanel.groupId:   
+    if message.chat.id == adminPanel.groupId: 
+        log("checker call")
         dataProcessor.CompareAllGroups()               
 
 @bot.message_handler(func=lambda message: message.chat.id == adminPanel.groupId and
                      message.message_thread_id == adminPanel.commandPlaceThreadId and
                      message.text.startswith('$'))
-def send(message):
+def execMsg(message):
     text=message.text.replace('$', '', 1)
     try:            
         exec(text)
@@ -201,7 +202,7 @@ def send(message):
 @bot.message_handler(func=lambda message: message.chat.id == adminPanel.groupId and
                      message.message_thread_id in [item.value for item in Notifier],
                      content_types=['text', 'photo', 'video', 'audio', 'document', 'sticker', 'voice', 'location', 'contact', 'animation'])
-def send(message):
+def notify(message):
     if Notifier(message.message_thread_id) != Notifier.general:
         group = notifierToGroup.get(Notifier(message.message_thread_id))
         users = databaseManager.GetAllUsersByGroup(group)   
