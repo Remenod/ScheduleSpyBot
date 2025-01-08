@@ -1,9 +1,9 @@
 import telebot
 import dataProcessor
 import databaseManager
+from logger import log
 from botBase import bot
-from logger import log, adminPanel
-from enumerations import Group, Notifier, notifierToGroup
+from enumerations import Group, Notifier, AdminPanel, notifierToGroup
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -50,7 +50,7 @@ def callback_handler(call):
 
 @bot.message_handler(commands=['delete_week'])
 def delete_week(message):
-    if message.chat.id == adminPanel.groupId:        
+    if message.chat.id == AdminPanel.groupId:        
         try:
             cParts = message.text.split()
             if len(cParts) == 2:
@@ -70,7 +70,7 @@ def delete_week(message):
 
 @bot.message_handler(commands=['print'])
 def send_sheet_data(message):
-    if message.chat.id == adminPanel.groupId:
+    if message.chat.id == AdminPanel.groupId:
         log(f"print call by {message.from_user.first_name}")
         try:
             cParts = message.text.split()
@@ -91,7 +91,7 @@ def send_sheet_data(message):
 
 @bot.message_handler(commands=['compare'])
 def compare(message):
-    if message.chat.id == adminPanel.groupId:
+    if message.chat.id == AdminPanel.groupId:
         log(f"comparator call by {message.from_user.first_name}")
         try:
             cParts = message.text.split()
@@ -116,7 +116,7 @@ def compare(message):
 
 @bot.message_handler(commands=['cool_compare'])
 def coolCompare(message):
-    if message.chat.id == adminPanel.groupId:
+    if message.chat.id == AdminPanel.groupId:
         log(f"coolComparator call by {message.from_user.first_name}")
         try:
             cParts = message.text.split()
@@ -141,7 +141,7 @@ def coolCompare(message):
 
 @bot.message_handler(commands=['fill_schedule_table'])
 def fill_group_handler(message):
-    if message.chat.id == adminPanel.groupId:
+    if message.chat.id == AdminPanel.groupId:
         try:
             cParts = message.text.split()
             if len(cParts) != 2:
@@ -165,12 +165,12 @@ def fill_group_handler(message):
 
 @bot.message_handler(commands=['call_checker'])
 def fill_group_handler(message):
-    if message.chat.id == adminPanel.groupId: 
+    if message.chat.id == AdminPanel.groupId: 
         log("checker call")
         dataProcessor.CompareAllGroups()               
 
-@bot.message_handler(func=lambda message: message.chat.id == adminPanel.groupId and
-                     message.message_thread_id == adminPanel.commandPlaceThreadId and
+@bot.message_handler(func=lambda message: message.chat.id == AdminPanel.groupId and
+                     message.message_thread_id == AdminPanel.commandPlaceThreadId and
                      message.text.startswith('$'))
 def execMsg(message):
     text=message.text.replace('$', '', 1)
@@ -179,7 +179,7 @@ def execMsg(message):
     except Exception as e:            
         log(e)
 
-@bot.message_handler(func=lambda message: message.chat.id == adminPanel.groupId and
+@bot.message_handler(func=lambda message: message.chat.id == AdminPanel.groupId and
                      message.message_thread_id in [item.value for item in Notifier],
                      content_types=['text', 'photo', 'video', 'audio', 'document', 'sticker', 'voice', 'location', 'contact', 'animation'])
 def notify(message):

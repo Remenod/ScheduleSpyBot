@@ -28,6 +28,13 @@ class Notifier(Enum):
     KT24    = 4659
     general = 4709
 
+
+class AdminPanel(Enum):
+    groupId              = -1002499863221
+    logerThreadId        = 2749
+    commandPlaceThreadId = 2751
+
+
 notifierToGroup = {
 Notifier.KC241_1: Group.KC241_1,
 Notifier.KC241_2: Group.KC241_2,

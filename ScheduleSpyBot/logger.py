@@ -1,16 +1,12 @@
 from botBase import bot, logClient
-from collections import namedtuple
+from enumerations import AdminPanel
 
-
-adminGroupData = namedtuple("adminGroupData", ['groupId','logerThreadId','commandPlaceThreadId'])
-adminPanel = adminGroupData(-1002499863221, 2749, 2751)
-
-def log(text:str, threadId:int = adminPanel.logerThreadId):
+def log(text:str, threadId:int = AdminPanel.logerThreadId):
     print(text)
     try:        
-        if(threadId == adminPanel.logerThreadId):
-            logClient.send_message(adminPanel.groupId, text, message_thread_id=threadId)
+        if(threadId == AdminPanel.logerThreadId):
+            logClient.send_message(AdminPanel.groupId, text, message_thread_id=threadId)
         else:
-            bot.send_message(adminPanel.groupId, text, message_thread_id=threadId)
+            bot.send_message(AdminPanel.groupId, text, message_thread_id=threadId)
     except Exception as e:
         print(f"logger error: {e}")
