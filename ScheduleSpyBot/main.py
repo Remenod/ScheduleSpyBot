@@ -1,5 +1,5 @@
 from csAutoCompiler import CompileAll
-CompileAll()
+# CompileAll()
 
 import botCommands
 from logger import log

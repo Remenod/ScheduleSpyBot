@@ -10,16 +10,32 @@ from botBase import bot
 from enumerations import Group
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
 
 load_dotenv(dotenv_path=r'../Secrets/KEYS.env')
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
-SERVICE_ACCOUNT_FILE = r'../Secrets/schedulespybot-86b7d86a2ebb.json'
+SERVICE_ACCOUNT_FILE = r'../Secrets/schedulespybot-6e8cfdc17fcb.json'
 
 # Налаштування доступу до Google Sheets API
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly', 'https://www.googleapis.com/auth/drive.readonly']
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 service = build('sheets', 'v4', credentials=credentials)   
+
+def GetSheetGids():
+    try:        
+        sheet_metadata = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+                
+        sheet_gids = []
+        for sheet in sheet_metadata['sheets']:
+            sheet_gids.append(sheet['properties']['sheetId'])
+        
+        return sheet_gids
+
+    except Exception as e:
+        print(f"Виникла помилка: {e}")
+        return []
+
 
 def SendToAllUsers(msg:str):
     try:

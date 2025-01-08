@@ -5,6 +5,7 @@ from logger import log
 from botBase import bot
 from enumerations import Group, Notifier, AdminPanel, notifierToGroup
 
+
 @bot.message_handler(commands=['start'])
 def start(message):
     log(f"start call by {message.from_user.first_name}")
@@ -66,6 +67,18 @@ def about(message):
                      parse_mode="Markdown",
                      disable_web_page_preview=True,
                      message_thread_id=message.message_thread_id)
+
+@bot.message_handler(commands=['schedule'])
+def schedule(message):
+    from dataProcessor import SPREADSHEET_ID
+    markup = telebot.types.InlineKeyboardMarkup()    
+    currWeekNum = databaseManager.GetAllSheetsNumbers()[0]
+    currWeekGid = dataProcessor.GetSheetGids()[int(currWeekNum)-1] or 1
+    button = telebot.types.InlineKeyboardButton(text="Відкрити розклад", web_app=telebot.types.WebAppInfo(url=
+                                                    f"https://docs.google.com/spreadsheets/u/0/d/{SPREADSHEET_ID}"
+                                                    f"/htmlview?output=html&rm=demo&pli=1&widget=true&gid={currWeekGid}#gid={currWeekGid}"))
+    markup.add(button)
+    bot.send_message(message.chat.id, "Відкрити розклад на актуальній сторінці", reply_markup=markup)
 
 
 # Admin only
