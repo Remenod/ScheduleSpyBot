@@ -8,7 +8,13 @@ from enumerations import Group, Notifier, AdminPanel, notifierToGroup
 @bot.message_handler(commands=['start'])
 def start(message):
     log(f"start call by {message.from_user.first_name}")
-    bot.send_message(message.chat.id, "Є єдина команда /print {номер тижня}\nНаприклад /print 4 - виведе розклад за 4 тиждень. Поки все", message_thread_id=message.message_thread_id)
+    bot.send_message(message.chat.id, 
+                    "Привіт! Це бот, який автоматично відслідковує зміни у твоєму розкладі. 📅\n"
+                    "Як тільки буде знайдено оновлення, він в межах декількох хвилин надішле тобі повідомлення! 🔔\n"
+                    "Все що тобі потрібно це лише вибрати про оновлення розкладу якої групи ти хочеш отримувати сповіщення.\n"
+                    "Введи /about, щоб дізнатися більше про його можливості.", 
+                    message_thread_id=message.message_thread_id)
+
 
     if databaseManager.GetUserInfo(message.from_user.id)['group_name']=="":
         change_group(message)
@@ -37,7 +43,7 @@ def change_group(message):
     keyboard.add(button3, button4)
     keyboard.add(button5, button6, button7)
     
-    sent_message = bot.send_message(message.chat.id, "Оберіть групу:", reply_markup=keyboard, message_thread_id=message.message_thread_id)
+    sent_message = bot.send_message(message.chat.id, "Обери групу за розкладом якої ти хочиш слідкувати:", reply_markup=keyboard, message_thread_id=message.message_thread_id)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
@@ -46,11 +52,27 @@ def callback_handler(call):
 
     databaseManager.UpdateUserGroup(call.from_user.id, call.data)
 
+@bot.message_handler(commands=['about'])
+def about(message):
+    log(f"about call by {message.from_user.first_name}")
+    bot.send_message(message.chat.id, 
+                     "Це бот для відслідковування змін у розкладі.\n"
+                     "Ось як він працює:\n"
+                     "- Завантажує поточний розклад. ⬇️\n"
+                     "- Порівнює його зі збереженим розкладом, що був декілька хвилин тому. ↔️\n"
+                     "- Якщо знаходить зміни в вибраній тобою групі, надсилає тобі повідомлення. 🔔\n"
+                     "\nТакож бот повідомить тебе при появі нового тижня в розкладі. 📅\n"
+                     "\nЯкщо потрібна допомога, є ідеї для покращення або ти зіткнувся з [багом](https://youtu.be/dQw4w9WgXcQ), звертайся до адміністратора (контакти вказані в опису бота).", 
+                     parse_mode="Markdown",
+                     disable_web_page_preview=True,
+                     message_thread_id=message.message_thread_id)
+
+
 # Admin only
 
 @bot.message_handler(commands=['delete_week'])
 def delete_week(message):
-    if message.chat.id == AdminPanel.groupId:        
+    if message.chat.id == AdminPanel.groupId.value:
         try:
             cParts = message.text.split()
             if len(cParts) == 2:
@@ -70,7 +92,7 @@ def delete_week(message):
 
 @bot.message_handler(commands=['print'])
 def send_sheet_data(message):
-    if message.chat.id == AdminPanel.groupId:
+    if message.chat.id == AdminPanel.groupId.value:
         log(f"print call by {message.from_user.first_name}")
         try:
             cParts = message.text.split()
@@ -91,7 +113,7 @@ def send_sheet_data(message):
 
 @bot.message_handler(commands=['compare'])
 def compare(message):
-    if message.chat.id == AdminPanel.groupId:
+    if message.chat.id == AdminPanel.groupId.value:
         log(f"comparator call by {message.from_user.first_name}")
         try:
             cParts = message.text.split()
@@ -116,7 +138,7 @@ def compare(message):
 
 @bot.message_handler(commands=['cool_compare'])
 def coolCompare(message):
-    if message.chat.id == AdminPanel.groupId:
+    if message.chat.id == AdminPanel.groupId.value:
         log(f"coolComparator call by {message.from_user.first_name}")
         try:
             cParts = message.text.split()
@@ -141,7 +163,7 @@ def coolCompare(message):
 
 @bot.message_handler(commands=['fill_schedule_table'])
 def fill_group_handler(message):
-    if message.chat.id == AdminPanel.groupId:
+    if message.chat.id == AdminPanel.groupId.value:
         try:
             cParts = message.text.split()
             if len(cParts) != 2:
@@ -165,12 +187,12 @@ def fill_group_handler(message):
 
 @bot.message_handler(commands=['call_checker'])
 def fill_group_handler(message):
-    if message.chat.id == AdminPanel.groupId: 
+    if message.chat.id == AdminPanel.groupId.value: 
         log("checker call")
         dataProcessor.CompareAllGroups()               
 
-@bot.message_handler(func=lambda message: message.chat.id == AdminPanel.groupId and
-                     message.message_thread_id == AdminPanel.commandPlaceThreadId and
+@bot.message_handler(func=lambda message: message.chat.id == AdminPanel.groupId.value and
+                     message.message_thread_id == AdminPanel.commandPlaceThreadId.value and
                      message.text.startswith('$'))
 def execMsg(message):
     text=message.text.replace('$', '', 1)
@@ -179,7 +201,7 @@ def execMsg(message):
     except Exception as e:            
         log(e)
 
-@bot.message_handler(func=lambda message: message.chat.id == AdminPanel.groupId and
+@bot.message_handler(func=lambda message: message.chat.id == AdminPanel.groupId.value and
                      message.message_thread_id in [item.value for item in Notifier],
                      content_types=['text', 'photo', 'video', 'audio', 'document', 'sticker', 'voice', 'location', 'contact', 'animation'])
 def notify(message):
