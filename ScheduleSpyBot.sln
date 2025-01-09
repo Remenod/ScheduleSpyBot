@@ -32,7 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{00F4CD39-E10
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{FFF0A803-D8DD-469B-8AE0-65A1C0EF9E4D}"
 	ProjectSection(SolutionItems) = preProject
-		js\script.js = js\script.js
+		js\gidArgTaker.js = js\gidArgTaker.js
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{B9FB5D0A-E69E-4FC0-AC1C-4321C03E86DE}"

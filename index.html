@@ -9,23 +9,15 @@
             width: 2500px;
             height: 15000px;
             overflow: hidden;
-            transform: scale(0.7);
+            transform: scale(0.65);
             transform-origin: 0 0;
         }
     </style>
 </head>
-<body>        
+<body>
     <div class="iframe-container">
         <iframe id="scheduleIframe" width="100%" height="100%" frameborder="0"></iframe>
     </div>
-
-    <script>        
-        const urlParams = new URLSearchParams(window.location.search);
-        const currWeekGid = urlParams.get('currWeekGid') || '0';
-        
-        const iframeSrc = `https://docs.google.com/spreadsheets/d/106PsLWpv_rWHSS8qCghliTpv6kZVTRiabmFyeWN6zH4/htmlview?widget=true&headers=true&gid=${currWeekGid}#gid=${currWeekGid}`;
-
-        document.getElementById('scheduleIframe').src = iframeSrc;
-    </script>
+    <script src="js/gidArgTaker.js"></script>
 </body>
 </html>
