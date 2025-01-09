@@ -25,19 +25,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		requirements.txt = requirements.txt
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02B60A7F-C80C-470B-B4DF-3F5EAD5CFC4E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{00F4CD39-E104-4FF6-8AF9-7A0580D13477}"
 	ProjectSection(SolutionItems) = preProject
-		docs\index.html = docs\index.html
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{5F872558-F4CC-4B7E-AFF1-26786D89FCD6}"
-	ProjectSection(SolutionItems) = preProject
-		docs\css\style.css = docs\css\style.css
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{A1523380-9280-442E-A927-C2E44EAC8109}"
-	ProjectSection(SolutionItems) = preProject
-		docs\js\script.js = docs\js\script.js
+		index.html = index.html
+		js\script.js = js\script.js
+		css\style.css = css\style.css
 	EndProjectSection
 EndProject
 Global
@@ -63,9 +55,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{5F872558-F4CC-4B7E-AFF1-26786D89FCD6} = {02B60A7F-C80C-470B-B4DF-3F5EAD5CFC4E}
-		{A1523380-9280-442E-A927-C2E44EAC8109} = {02B60A7F-C80C-470B-B4DF-3F5EAD5CFC4E}
 	EndGlobalSection
 EndGlobal
