@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Secrets", "Secrets", "{078A4CDC-C786-4328-BD21-C2B480DCD893}"
 	ProjectSection(SolutionItems) = preProject
 		Secrets\KEYS.env = Secrets\KEYS.env
+		Secrets\schedulespybot-6e8cfdc17fcb.json = Secrets\schedulespybot-6e8cfdc17fcb.json
 		Secrets\schedulespybot-86b7d86a2ebb.json = Secrets\schedulespybot-86b7d86a2ebb.json
 	EndProjectSection
 EndProject
@@ -22,6 +23,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		requirements.txt = requirements.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "website", "website", "{02B60A7F-C80C-470B-B4DF-3F5EAD5CFC4E}"
+	ProjectSection(SolutionItems) = preProject
+		website\index.html = website\index.html
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{5F872558-F4CC-4B7E-AFF1-26786D89FCD6}"
+	ProjectSection(SolutionItems) = preProject
+		website\css\style.css = website\css\style.css
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{A1523380-9280-442E-A927-C2E44EAC8109}"
+	ProjectSection(SolutionItems) = preProject
+		website\js\script.js = website\js\script.js
 	EndProjectSection
 EndProject
 Global
@@ -47,5 +63,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5F872558-F4CC-4B7E-AFF1-26786D89FCD6} = {02B60A7F-C80C-470B-B4DF-3F5EAD5CFC4E}
+		{A1523380-9280-442E-A927-C2E44EAC8109} = {02B60A7F-C80C-470B-B4DF-3F5EAD5CFC4E}
 	EndGlobalSection
 EndGlobal
