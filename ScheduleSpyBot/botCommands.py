@@ -84,15 +84,17 @@ def about(message):
 def schedule(message):
     from dataProcessor import SPREADSHEET_ID
     markup = telebot.types.InlineKeyboardMarkup()    
-    currWeekNum = databaseManager.GetAllSheetsNumbers()[0]
+    currWeekNum = dataProcessor.weekNums[0]
     currWeekGid = dataProcessor.gids[int(currWeekNum)-1] or 1
+
+    button1 = telebot.types.InlineKeyboardButton(text="Відкрити розклад", web_app=telebot.types.WebAppInfo(url=
+                                                    f"https://remenod.github.io/ScheduleSpyBot/?currWeekGid={currWeekGid}"))
     button = telebot.types.InlineKeyboardButton(text="Відкрити розклад (URL)", url=
                                                     f"https://docs.google.com/spreadsheets/u/0/d/{SPREADSHEET_ID}"
                                                     f"/htmlview?output=html&rm=demo&pli=1&widget=true&gid={currWeekGid}#gid={currWeekGid}")
-    button1 = telebot.types.InlineKeyboardButton(text="Відкрити розклад", web_app=telebot.types.WebAppInfo(url=
-                                                    f"https://remenod.github.io/ScheduleSpyBot/?currWeekGid={currWeekGid}"))
-    markup.add(button)
+
     markup.add(button1)
+    markup.add(button)
     bot.send_message(message.chat.id, "Ось розклад на актуальній сторінці", reply_markup=markup)
 
 

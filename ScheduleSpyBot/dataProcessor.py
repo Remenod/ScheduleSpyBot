@@ -147,13 +147,15 @@ def ParseComparerOutput(input:str) -> str:
         raise Exception("Error: Compiled executable not found.")
         return None
 
+weekNums = databaseManager.GetAllSheetsNumbers()
+
 def CompareAllGroups():
     log("Запускаю перевірку...")
 
     log("Завантажую таблицю з Google API...")
     workbook = LoadWorkbook()    
 
-    weekNums = databaseManager.GetAllSheetsNumbers()    
+    weekNums = databaseManager.GetAllSheetsNumbers()   
 
     actualWeekNum = int(weekNums[0])
     lastWeekNum = int(workbook.worksheets[-1].title.split("т")[0])
