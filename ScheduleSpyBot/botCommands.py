@@ -90,8 +90,7 @@ def schedule(message):
                                                     f"https://docs.google.com/spreadsheets/u/0/d/{SPREADSHEET_ID}"
                                                     f"/htmlview?output=html&rm=demo&pli=1&widget=true&gid={currWeekGid}#gid={currWeekGid}")
     button1 = telebot.types.InlineKeyboardButton(text="Відкрити розклад", web_app=telebot.types.WebAppInfo(url=
-                                                    f"https://docs.google.com/spreadsheets/u/0/d/{SPREADSHEET_ID}"
-                                                    f"/htmlview?output=html&rm=demo&pli=1&widget=true&gid={currWeekGid}#gid={currWeekGid}"))
+                                                    f"https://remenod.github.io/ScheduleSpyBot/?currWeekGid={currWeekGid}"))
     markup.add(button)
     markup.add(button1)
     bot.send_message(message.chat.id, "Ось розклад на актуальній сторінці", reply_markup=markup)

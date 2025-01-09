@@ -28,7 +28,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{00F4CD39-E104-4FF6-8AF9-7A0580D13477}"
 	ProjectSection(SolutionItems) = preProject
 		index.html = index.html
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{FFF0A803-D8DD-469B-8AE0-65A1C0EF9E4D}"
+	ProjectSection(SolutionItems) = preProject
 		js\script.js = js\script.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{B9FB5D0A-E69E-4FC0-AC1C-4321C03E86DE}"
+	ProjectSection(SolutionItems) = preProject
 		css\style.css = css\style.css
 	EndProjectSection
 EndProject
@@ -55,5 +63,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FFF0A803-D8DD-469B-8AE0-65A1C0EF9E4D} = {00F4CD39-E104-4FF6-8AF9-7A0580D13477}
+		{B9FB5D0A-E69E-4FC0-AC1C-4321C03E86DE} = {00F4CD39-E104-4FF6-8AF9-7A0580D13477}
 	EndGlobalSection
 EndGlobal

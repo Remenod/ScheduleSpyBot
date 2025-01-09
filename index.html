@@ -7,17 +7,25 @@
     <style>
         .iframe-container {
             width: 2500px;
-            height: 25000px;
+            height: 15000px;
             overflow: hidden;
-            transform: scale(0.5);
-            transform-origin: 0 0; /* Встановлює точку масштабування у верхній лівий кут */
+            transform: scale(0.7);
+            transform-origin: 0 0;
         }
     </style>
 </head>
 <body>        
     <div class="iframe-container">
-        <iframe src="https://docs.google.com/spreadsheets/d/106PsLWpv_rWHSS8qCghliTpv6kZVTRiabmFyeWN6zH4/htmlview?widget=true&headers=true"
-                width="100%" height="100%" frameborder="0"></iframe>
+        <iframe id="scheduleIframe" width="100%" height="100%" frameborder="0"></iframe>
     </div>
+
+    <script>        
+        const urlParams = new URLSearchParams(window.location.search);
+        const currWeekGid = urlParams.get('currWeekGid') || '0';
+        
+        const iframeSrc = `https://docs.google.com/spreadsheets/d/106PsLWpv_rWHSS8qCghliTpv6kZVTRiabmFyeWN6zH4/htmlview?widget=true&headers=true&gid=${currWeekGid}#gid=${currWeekGid}`;
+
+        document.getElementById('scheduleIframe').src = iframeSrc;
+    </script>
 </body>
 </html>
