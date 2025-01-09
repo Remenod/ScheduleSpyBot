@@ -20,7 +20,7 @@ def start(message):
     if databaseManager.GetUserInfo(message.from_user.id)['group_name']=="":
         change_group(message)
 
-@bot.message_handler(commands=['changeGroup'])
+@bot.message_handler(commands=['change_group'])
 def change_group(message):
     log(f"change group call by {message.from_user.first_name}")
     fullName = None
@@ -85,7 +85,7 @@ def schedule(message):
     from dataProcessor import SPREADSHEET_ID
     markup = telebot.types.InlineKeyboardMarkup()    
     currWeekNum = databaseManager.GetAllSheetsNumbers()[0]
-    currWeekGid = dataProcessor.GetSheetGids()[int(currWeekNum)-1] or 1
+    currWeekGid = dataProcessor.gids[int(currWeekNum)-1] or 1
     button = telebot.types.InlineKeyboardButton(text="Відкрити розклад (URL)", url=
                                                     f"https://docs.google.com/spreadsheets/u/0/d/{SPREADSHEET_ID}"
                                                     f"/htmlview?output=html&rm=demo&pli=1&widget=true&gid={currWeekGid}#gid={currWeekGid}")

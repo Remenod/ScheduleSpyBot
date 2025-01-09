@@ -20,10 +20,11 @@ SERVICE_ACCOUNT_FILE = r'../Secrets/schedulespybot-6e8cfdc17fcb.json'
 # Налаштування доступу до Google Sheets API
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly', 'https://www.googleapis.com/auth/drive.readonly']
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-service = build('sheets', 'v4', credentials=credentials)   
+service = build('sheets', 'v4', credentials=credentials)
 
-def GetSheetGids():
-    try:        
+def GetSheetGids() -> list:
+    log("Loading gids...")
+    try:
         sheet_metadata = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
                 
         sheet_gids = []
@@ -35,7 +36,10 @@ def GetSheetGids():
     except Exception as e:
         print(f"Виникла помилка: {e}")
         return []
+    finally:
+        log("Gids loaded.")
 
+gids = GetSheetGids()
 
 def SendToAllUsers(msg:str):
     try:
@@ -161,21 +165,21 @@ def CompareAllGroups():
     if(lastWeekNum != lastSavedWeekNum):
         try:
             currWeekNum = lastWeekNum            
-            while currWeekNum != actualWeekNum:                   
+            while currWeekNum != actualWeekNum:
                 sameAsOldWeekIndex += 1
                 currWeekNum = int(workbook.worksheets[-sameAsOldWeekIndex].title.split("т")[0])
                             
-
         except IndexError:
                log("Error: No old week found")
                return None
 
-        finally:              
+        finally:
             SendToAllUsers("В розкладі з'явився новий тиждень.\n Для перегляду можете скористатися командою /schedule")
             log("В розкладі з'явились нові тижні")
+            gids = GetSheetGids()
             temp = sameAsOldWeekIndex
 
-            while (actualWeekNum+temp-1) != actualWeekNum:                
+            while (actualWeekNum+temp-1) != actualWeekNum:
                 for group in Group:
                     currSchedule = GetSchedule(workbook.worksheets[actualWeekNum+temp-2],group)
                     databaseManager.WriteSchedule(actualWeekNum+temp-1, group, f"{currSchedule}")
