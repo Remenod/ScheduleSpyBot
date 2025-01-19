@@ -15,6 +15,13 @@ def start(message):
                     "Все що тобі потрібно це лише вибрати про оновлення розкладу якої групи ти хочеш отримувати сповіщення.\n"
                     "Введи /about, щоб дізнатися більше про його можливості та як він влаштований.", 
                     message_thread_id=message.message_thread_id)
+    fullName = None
+    if message.from_user.last_name is not None:
+        fullName = f"{message.from_user.first_name} {message.from_user.last_name}"
+    else:
+        fullName = message.from_user.first_name
+
+    databaseManager.SaveUser(message.from_user.id, fullName, message.from_user.username)
 
 
     if databaseManager.GetUserInfo(message.from_user.id)['group_name']=="":
