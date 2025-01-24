@@ -1,4 +1,6 @@
+import os
 import telebot
+import platform
 import dataProcessor
 import databaseManager
 from logger import log
@@ -226,7 +228,29 @@ def fill_group_handler(message):
 def fill_group_handler(message):
     if message.chat.id == AdminPanel.groupId.value: 
         log("checker call")
-        dataProcessor.CompareAllGroups()               
+        dataProcessor.CompareAllGroups()
+        
+@bot.message_handler(commands=['stop'])
+def stop(message):
+    if message.chat.id == AdminPanel.groupId.value:        
+        curent_system = platform.system()
+        if curent_system == 'Windows':
+            log("Зупинка бота...")
+            os.system('taskkill /F /PID %d' % os.getpid())
+            log("But it refused.")
+        elif curent_system == 'Linux':
+            log("Зупинка бота...")
+            os._exit(0)
+            log("But it refused.")
+        else:
+            try:
+                log("Зупинка бота...")
+                os._exit(0)
+                os.system('taskkill /F /PID %d' % os.getpid())
+            except Exception as e:
+                log(f"Помилка при спробі зупинки бота: {e}")
+            log("Спроба зупинки бота на незареєстрованій системі завершилась невдачею.")   
+
 
 @bot.message_handler(func=lambda message: message.chat.id == AdminPanel.groupId.value and
                      message.message_thread_id == AdminPanel.commandPlaceThreadId.value and
