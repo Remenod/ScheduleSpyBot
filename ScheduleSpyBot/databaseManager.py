@@ -1,6 +1,7 @@
 import os
 import requests
 from logger import log
+from typing import Union
 from dotenv import load_dotenv
 from enumerations import Group
 
@@ -83,7 +84,7 @@ def DeleteSheet(sheet_number:int = GetAllSheetsNumbers()[0]):
 
 #User management
 
-def SaveUser(chat_id:int|str, full_name:str, username:str):
+def SaveUser(chat_id: Union[int, str], full_name:str, username:str):
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'save_user',
@@ -99,7 +100,7 @@ def SaveUser(chat_id:int|str, full_name:str, username:str):
     except Exception as e:
         log(f"Помилка збереження користувача через PHP API: {e}")
 
-def UpdateUserGroup(chat_id:int|str, group_name):
+def UpdateUserGroup(chat_id: Union[int, str], group_name):
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'update_group',
@@ -114,7 +115,7 @@ def UpdateUserGroup(chat_id:int|str, group_name):
     except Exception as e:
         log(f"Помилка оновлення групи через PHP API: {e}")
 
-def GetUserInfo(chat_id:int|str) -> dict:
+def GetUserInfo(chat_id:Union[int, str]) -> dict:
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'get_user',

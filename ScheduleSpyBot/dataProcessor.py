@@ -1,4 +1,5 @@
 import os
+import re
 import openpyxl
 import openpyxl.workbook
 import requests
@@ -51,6 +52,8 @@ def SendToAllUsers(msg:str):
          log(f"Error sending message to user: {e}")
 
 def GetRightLines(value:str) -> str:
+    if value is None:
+        return None
     lines = value.split("\n")
     subjectLine = next((line for line in lines if line.strip()), None)
     auditoriumLine = next(
