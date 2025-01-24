@@ -1,3 +1,4 @@
+import os
 import subprocess
 from logger import log
 
@@ -10,7 +11,10 @@ def CompileAll():
 
 def CompileComparer():
     try:
-        build_result = subprocess.run(["dotnet", "build", "../comparer"], capture_output=True, text=True)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        comparer_dir = os.path.abspath(os.path.join(current_dir, "..", "comparer"))
+        
+        build_result = subprocess.run(["dotnet", "build", comparer_dir], capture_output=True, text=True)
         if build_result.returncode != 0:
             log(f"Comparer Build Error: {build_result.stderr.strip()}")
             return None
@@ -22,7 +26,10 @@ def CompileComparer():
 
 def CompileScheduleClass():
     try:
-        build_result = subprocess.run(["dotnet", "build", "../scheduleClass"], capture_output=True, text=True)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        scheduleClass_dir = os.path.abspath(os.path.join(current_dir, "..", "scheduleClass"))
+        
+        build_result = subprocess.run(["dotnet", "build", scheduleClass_dir], capture_output=True, text=True)        
         if build_result.returncode != 0:
             log(f"ScheduleClass Build Error:{build_result.stderr.strip()}")
             return None
@@ -33,7 +40,10 @@ def CompileScheduleClass():
 
 def CompileParser():
     try:
-        build_result = subprocess.run(["dotnet", "build", "../parser"], capture_output=True, text=True)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        parser_dir = os.path.abspath(os.path.join(current_dir, "..", "parser"))
+ 
+        build_result = subprocess.run(["dotnet", "build", parser_dir], capture_output=True, text=True)        
         if build_result.returncode != 0:
             log(f"Parser Build Error:{build_result.stderr.strip()}")
             return None

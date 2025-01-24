@@ -6,7 +6,10 @@ from dotenv import load_dotenv
 from enumerations import Group
 
 
-load_dotenv('../Secrets/KEYS.env')
+current_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(current_dir, '..', 'Secrets', 'KEYS.env')
+
+load_dotenv(env_path)
 
 PHP_API_URL        = os.getenv('PHP_API_URL')
 USER_IDS_URL       = os.getenv('USER_IDS_URL')

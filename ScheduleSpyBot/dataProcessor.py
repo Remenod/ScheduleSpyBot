@@ -14,9 +14,15 @@ from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
 
-load_dotenv(dotenv_path=r'../Secrets/KEYS.env')
+current_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(current_dir, '..', 'Secrets', 'KEYS.env')
+
+load_dotenv(env_path)
 SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
-SERVICE_ACCOUNT_FILE = r'../Secrets/schedulespybot-6e8cfdc17fcb.json'
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+service_account_path = os.path.join(current_dir, "..", "Secrets", "schedulespybot-6e8cfdc17fcb.json")
+SERVICE_ACCOUNT_FILE = os.path.abspath(service_account_path)
 
 # Налаштування доступу до Google Sheets API
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly', 'https://www.googleapis.com/auth/drive.readonly']
@@ -118,7 +124,11 @@ def GetSchedule(sheet_, columNum:Group, rawOutput:bool = False) -> str:
     return output
 
 def CompareSchedules(input1:str, input2:str) -> str:
-    dll_path = os.path.join("../comparer", "bin", "Debug", "net8.0", "comparer.dll")       
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    dll_path = os.path.join(current_dir, "..", "comparer", "bin", "Debug", "net8.0", "comparer.dll")
+
+    dll_path = os.path.abspath(dll_path)
+
     try:
         run_result = subprocess.run(["dotnet", dll_path, input1, input2],
                                     capture_output=True,
@@ -128,14 +138,17 @@ def CompareSchedules(input1:str, input2:str) -> str:
             log(f"Execution Error:{run_result.stderr.strip()}")
             return None        
         return run_result.stdout.strip()
-
     except FileNotFoundError:
         log("Error: Compiled executable not found.")
         raise Exception("Error: Compiled executable not found.")
         return None
 
 def ParseComparerOutput(input:str) -> str:
-    dll_path = os.path.join("../parser", "bin", "Debug", "net8.0", "parser.dll")       
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    dll_path = os.path.join(current_dir, "..", "parser", "bin", "Debug", "net8.0", "parser.dll")
+
+    dll_path = os.path.abspath(dll_path)
+
     try:
         run_result = subprocess.run(["dotnet", dll_path, input],
                                     capture_output=True,

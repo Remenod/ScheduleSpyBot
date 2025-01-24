@@ -1,7 +1,7 @@
 from csAutoCompiler import CompileAll
-# CompileAll()
+CompileAll()
 
-import botCommands
+import botCommands # This import is necessary to register commands
 from logger import log
 from botBase import bot
 from changesChecker import StartCheckerLoop
