@@ -213,8 +213,6 @@ def CompareAllGroups():
 
 
     log("Перевіряю зміни в кожній групі...")
-    log(f"{actualWeekNum}")
-    log(f"{sameAsOldWeekIndex}")
     for group in Group:
         newSchedule = GetSchedule(workbook.worksheets[-sameAsOldWeekIndex], group)        
         oldSchedule = databaseManager.GetOldSchedule(actualWeekNum,group)
