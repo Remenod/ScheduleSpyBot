@@ -70,7 +70,7 @@ def GetAllSheetsNumbers() -> list:
         log(f"Помилка підключення до сервер: {e}")
         return []
 
-def DeleteSheet(sheet_number:int = GetAllSheetsNumbers()[0]):
+def DeleteSheet(sheet_number:int):
     data = {
         'action':'delete_sheet',
         'sheet_number':sheet_number

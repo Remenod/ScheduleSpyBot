@@ -91,15 +91,21 @@ def about(message):
 
 @bot.message_handler(commands=['schedule'])
 def schedule(message):
-    from dataProcessor import SPREADSHEET_ID
-    markup = telebot.types.InlineKeyboardMarkup()    
+    log(f"schedule call by {message.from_user.first_name}")    
+    markup = telebot.types.InlineKeyboardMarkup()
+    
+    if len(dataProcessor.weekNums) == 0:
+        log("Помилка. Не вдалося отримати записані тижні з бази данних.")
+        bot.send_message(message.chat.id, "Виникла помилка. Зв'яжіться з адміністратором.")
+        return None
+
     currWeekNum = dataProcessor.weekNums[0]
     currWeekGid = dataProcessor.gids[int(currWeekNum)-1] or 1
 
     button1 = telebot.types.InlineKeyboardButton(text="Відкрити розклад", web_app=telebot.types.WebAppInfo(url=
                                                     f"https://remenod.github.io/ScheduleSpyBot/?currWeekGid={currWeekGid}"))
     button = telebot.types.InlineKeyboardButton(text="Відкрити розклад (URL)", url=
-                                                    f"https://docs.google.com/spreadsheets/u/0/d/{SPREADSHEET_ID}"
+                                                    f"https://docs.google.com/spreadsheets/u/0/d/{dataProcessor.SPREADSHEET_ID}"
                                                     f"/htmlview?output=html&rm=demo&pli=1&widget=true&gid={currWeekGid}#gid={currWeekGid}")
 
     markup.add(button1)
@@ -112,12 +118,11 @@ def schedule(message):
 @bot.message_handler(commands=['delete_week'])
 def delete_week(message):
     if message.chat.id == AdminPanel.groupId.value:
+        log(f"delete_week call by {message.from_user.first_name}")
         try:
             cParts = message.text.split()
             if len(cParts) == 2:
                 databaseManager.DeleteSheet(cParts[1])
-            elif len(cParts) == 1:
-                databaseManager.DeleteSheet()
             else:
                 bot.send_message(message.chat.id, "Будь ласка, вкажіть номер тижня. Наприклад: /delete_week 4", message_thread_id=message.message_thread_id)
                 return           
@@ -203,6 +208,7 @@ def coolCompare(message):
 @bot.message_handler(commands=['fill_schedule_table'])
 def fill_group_handler(message):
     if message.chat.id == AdminPanel.groupId.value:
+        log(f"fill_schedule_table call by {message.from_user.first_name}")
         try:
             cParts = message.text.split()
             if len(cParts) != 2:
@@ -232,7 +238,8 @@ def fill_group_handler(message):
         
 @bot.message_handler(commands=['stop'])
 def stop(message):
-    if message.chat.id == AdminPanel.groupId.value:        
+    if message.chat.id == AdminPanel.groupId.value:
+        log(f"stop call by {message.from_user.first_name}")
         curent_system = platform.system()
         if curent_system == 'Windows':
             log("Зупинка бота...")

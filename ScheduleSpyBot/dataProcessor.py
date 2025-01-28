@@ -171,7 +171,11 @@ def CompareAllGroups():
     log("Завантажую таблицю з Google API...")
     workbook = LoadWorkbook()    
 
-    weekNums = databaseManager.GetAllSheetsNumbers()   
+    weekNums = databaseManager.GetAllSheetsNumbers()
+    
+    if len(weekNums) == 0:
+        log("Помилка. Не вдалося отримати записані тижні з бази данних")
+        return None
 
     actualWeekNum = int(weekNums[0])
     lastWeekNum = int(workbook.worksheets[-1].title.split("т")[0])

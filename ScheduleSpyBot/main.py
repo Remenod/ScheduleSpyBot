@@ -8,6 +8,6 @@ from changesChecker import StartCheckerLoop
 
 log("Bot started...")
 
-# StartCheckerLoop(120)
+StartCheckerLoop(900)
 
 bot.polling(none_stop=True)
