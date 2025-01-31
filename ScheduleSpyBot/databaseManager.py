@@ -88,6 +88,8 @@ def DeleteSheet(sheet_number:int):
 #User management
 
 def SaveUser(chat_id: Union[int, str], full_name:str, username:str):
+    if username is None:
+        username = "None"
     try:
         response = requests.post(PHP_API_URL, data={
             'action': 'save_user',
