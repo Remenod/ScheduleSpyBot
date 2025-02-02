@@ -1,4 +1,5 @@
 import os
+from urllib import response
 import requests
 from logger import log
 from typing import Union
@@ -19,6 +20,7 @@ ALL_BY_USERS_URL   = os.getenv('ALL_BY_USERS_URL')
 SAVE_SCHEDULE_URL  = os.getenv('SAVE_SCHEDULE_URL')
 GET_SHEET_NAME_URL = os.getenv('GET_SHEET_NAME')
 DELETE_SHEET_URL   = os.getenv('DELETE_SHEET')
+BLOCK_USERS_URL    = os.getenv('BLOCK_USERS_T')
 
 
 #Schedule management
@@ -174,3 +176,35 @@ def GetAllUsersByGroup(group:Group) -> list:
             return []
     else:
         return []
+
+def BlockUser(chat_id:Union[int,str]):
+    try:
+        response = requests.post(BLOCK_USERS_URL,data={
+            'action':'block',
+            'user_id': chat_id
+        })
+        response_data = response.json()
+        if response.status_code == 200 and response_data.get('status') == 'success':
+          print(f"✅ Користувач {chat_id} успішно заблокований!")
+        else:
+            print(f"⚠ Помилка блокування {chat_id}: {response_data.get('message', 'Невідома помилка')}")
+    
+    except Exception as e:
+        print(f"❌ Помилка підключення до PHP API: {e}")
+
+def get_blocked_users():
+    """Отримує список заблокованих користувачів через PHP API."""
+    try:
+        response = requests.post(BLOCK_USERS_URL, data={'action': 'get_blocked'})
+        response_data = response.json()
+
+        if response.status_code == 200:
+            return response_data 
+        else:
+            print(f"⚠ Помилка отримання списку заблокованих: {response_data.get('message', 'Невідома помилка')}")
+            return []
+    
+    except Exception as e:
+        print(f"❌ Помилка підключення до PHP API: {e}")
+        return []
+
