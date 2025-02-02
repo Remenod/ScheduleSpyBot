@@ -3,6 +3,8 @@ import threading
 from logger import log
 from dataProcessor import CompareAllGroups
 
+checkTimeout = None
+
 def CheckerLoop(checkCoolDown:int):
     log("Checker loop started...")
     while True:

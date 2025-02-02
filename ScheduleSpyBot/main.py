@@ -4,15 +4,17 @@ CompileAll()
 import telebot
 import threading
 import botCommands # This import is necessary to register commands
+import changesChecker
 import connectionChecker
 
 from logger import log
 from botBase import bot
-from changesChecker import StartCheckerLoop
+
 
 log("Bot started...")
 
-StartCheckerLoop(900)
+changesChecker.checkTimeout = 900
+changesChecker.StartCheckerLoop(changesChecker.checkTimeout)
 
 def reconnecter():
     while True:

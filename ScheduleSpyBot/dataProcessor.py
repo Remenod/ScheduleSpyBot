@@ -1,5 +1,4 @@
 import os
-import re
 import openpyxl
 import openpyxl.workbook
 import requests
@@ -13,12 +12,17 @@ from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
+from testModeVariable import TEST_MODE
+
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 env_path = os.path.join(current_dir, '..', 'Secrets', 'KEYS.env')
 
 load_dotenv(env_path)
-SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
+if not TEST_MODE:
+    SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
+else:
+    SPREADSHEET_ID = os.getenv("SPREADSHEET_ID_TEST")
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 service_account_path = os.path.join(current_dir, "..", "Secrets", "schedulespybot-6e8cfdc17fcb.json")

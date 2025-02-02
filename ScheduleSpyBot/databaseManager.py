@@ -4,6 +4,7 @@ from logger import log
 from typing import Union
 from dotenv import load_dotenv
 from enumerations import Group
+from testModeVariable import TEST_MODE
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -137,33 +138,39 @@ def GetUserInfo(chat_id:Union[int, str]) -> dict:
         return {}
 
 def GetAllUserIds() -> list:
-    try:
-        response = requests.get(USER_IDS_URL)
-        if response.status_code == 200:
-            result = response.json()
-            return result
-        else:
-            log(f"Помилка отримання користувачів: {result.get('error')}")
-            return []
+    if not TEST_MODE:
+        try:
+            response = requests.get(USER_IDS_URL)
+            if response.status_code == 200:
+                result = response.json()
+                return result
+            else:
+                log(f"Помилка отримання користувачів: {result.get('error')}")
+                return []
         
-    except Exception as e:
-        log(f"Помилка під час запиту(GetAllUserIds) до PHP сервера: {e}")
+        except Exception as e:
+            log(f"Помилка під час запиту(GetAllUserIds) до PHP сервера: {e}")
+            return []
+    else:
         return []
 
 def GetAllUsersByGroup(group:Group) -> list:
-    try:
-        data = {
-            "action": "get_chat_ids",
-            "group_name": group.name
-        }
-        response = requests.post(ALL_BY_USERS_URL, data=data)
-        result = response.json()
+    if not TEST_MODE:
+        try:
+            data = {
+                "action": "get_chat_ids",
+                "group_name": group.name
+            }
+            response = requests.post(ALL_BY_USERS_URL, data=data)
+            result = response.json()
         
-        if result.get('success') and 'chat_ids' in result:
-            return result['chat_ids']
-        else:
-            log(f"Помилка отримання користувачів групи {group.name}: {result.get('error')}")
+            if result.get('success') and 'chat_ids' in result:
+                return result['chat_ids']
+            else:
+                log(f"Помилка отримання користувачів групи {group.name}: {result.get('error')}")
+                return []
+        except Exception as e:
+            log(f"Помилка під час запиту(GetAllUsersByGroup) до PHP сервера: {e}")
             return []
-    except Exception as e:
-        log(f"Помилка під час запиту(GetAllUsersByGroup) до PHP сервера: {e}")
+    else:
         return []
