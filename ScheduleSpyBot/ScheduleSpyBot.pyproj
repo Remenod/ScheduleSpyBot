@@ -12,6 +12,7 @@
     <OutputPath>.</OutputPath>
     <Name>ScheduleSpyBot</Name>
     <RootNamespace>SxheduleSpyBot</RootNamespace>
+    <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

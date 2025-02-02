@@ -22,7 +22,7 @@ load_dotenv(env_path)
 if not TEST_MODE:
     SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
 else:
-    SPREADSHEET_ID = os.getenv("SPREADSHEET_ID_TEST")
+    SPREADSHEET_ID = os.getenv("SPREADSHEET_ID_T")
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 service_account_path = os.path.join(current_dir, "..", "Secrets", "schedulespybot-6e8cfdc17fcb.json")

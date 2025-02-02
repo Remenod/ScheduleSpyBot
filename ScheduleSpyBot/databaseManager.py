@@ -13,14 +13,24 @@ env_path = os.path.join(current_dir, '..', 'Secrets', 'KEYS.env')
 
 load_dotenv(env_path)
 
-PHP_API_URL        = os.getenv('PHP_API_URL')
-USER_IDS_URL       = os.getenv('USER_IDS_URL')
-OLD_SCHEDULE_URL   = os.getenv('OLD_SCHEDULE_URL')
-ALL_BY_USERS_URL   = os.getenv('ALL_BY_USERS_URL')
-SAVE_SCHEDULE_URL  = os.getenv('SAVE_SCHEDULE_URL')
-GET_SHEET_NAME_URL = os.getenv('GET_SHEET_NAME')
-DELETE_SHEET_URL   = os.getenv('DELETE_SHEET')
-BLOCK_USERS_URL    = os.getenv('BLOCK_USERS_T')
+if not TEST_MODE:
+    PHP_API_URL        = os.getenv('PHP_API_URL')
+    USER_IDS_URL       = os.getenv('USER_IDS_URL')
+    OLD_SCHEDULE_URL   = os.getenv('OLD_SCHEDULE_URL')
+    ALL_BY_USERS_URL   = os.getenv('ALL_BY_USERS_URL')
+    SAVE_SCHEDULE_URL  = os.getenv('SAVE_SCHEDULE_URL')
+    GET_SHEET_NAME_URL = os.getenv('GET_SHEET_NAME')
+    DELETE_SHEET_URL   = os.getenv('DELETE_SHEET')
+
+else:
+    PHP_API_URL        = os.getenv('PHP_API_URL_T')
+    USER_IDS_URL       = os.getenv('USER_IDS_URL_T')
+    OLD_SCHEDULE_URL   = os.getenv('OLD_SCHEDULE_URL_T')
+    ALL_BY_USERS_URL   = os.getenv('ALL_BY_USERS_URL_T')
+    SAVE_SCHEDULE_URL  = os.getenv('SAVE_SCHEDULE_URL_T')
+    GET_SHEET_NAME_URL = os.getenv('GET_SHEET_NAME_T')
+    DELETE_SHEET_URL   = os.getenv('DELETE_SHEET_T')
+    BLOCK_USERS_URL    = os.getenv('BLOCK_USERS_T')
 
 
 #Schedule management
@@ -140,41 +150,35 @@ def GetUserInfo(chat_id:Union[int, str]) -> dict:
         return {}
 
 def GetAllUserIds() -> list:
-    if not TEST_MODE:
-        try:
-            response = requests.get(USER_IDS_URL)
-            if response.status_code == 200:
-                result = response.json()
-                return result
-            else:
-                log(f"Помилка отримання користувачів: {result.get('error')}")
-                return []
-        
-        except Exception as e:
-            log(f"Помилка під час запиту(GetAllUserIds) до PHP сервера: {e}")
+    try:
+        response = requests.get(USER_IDS_URL)
+        if response.status_code == 200:
+            result = response.json()
+            return result
+        else:
+            log(f"Помилка отримання користувачів: {result.get('error')}")
             return []
-    else:
+        
+    except Exception as e:
+        log(f"Помилка під час запиту(GetAllUserIds) до PHP сервера: {e}")
         return []
 
 def GetAllUsersByGroup(group:Group) -> list:
-    if not TEST_MODE:
-        try:
-            data = {
-                "action": "get_chat_ids",
-                "group_name": group.name
-            }
-            response = requests.post(ALL_BY_USERS_URL, data=data)
-            result = response.json()
+    try:
+        data = {
+            "action": "get_chat_ids",
+            "group_name": group.name
+        }
+        response = requests.post(ALL_BY_USERS_URL, data=data)
+        result = response.json()
         
-            if result.get('success') and 'chat_ids' in result:
-                return result['chat_ids']
-            else:
-                log(f"Помилка отримання користувачів групи {group.name}: {result.get('error')}")
-                return []
-        except Exception as e:
-            log(f"Помилка під час запиту(GetAllUsersByGroup) до PHP сервера: {e}")
+        if result.get('success') and 'chat_ids' in result:
+            return result['chat_ids']
+        else:
+            log(f"Помилка отримання користувачів групи {group.name}: {result.get('error')}")
             return []
-    else:
+    except Exception as e:
+        log(f"Помилка під час запиту(GetAllUsersByGroup) до PHP сервера: {e}")
         return []
 
 def BlockUser(chat_id:Union[int,str]):
@@ -185,15 +189,14 @@ def BlockUser(chat_id:Union[int,str]):
         })
         response_data = response.json()
         if response.status_code == 200 and response_data.get('status') == 'success':
-          print(f"✅ Користувач {chat_id} успішно заблокований!")
+          log(f"Користувач {chat_id} успішно заблокований!")
         else:
-            print(f"⚠ Помилка блокування {chat_id}: {response_data.get('message', 'Невідома помилка')}")
-    
-    except Exception as e:
-        print(f"❌ Помилка підключення до PHP API: {e}")
+            log(f"Помилка блокування {chat_id}: {response_data.get('message', 'Невідома помилка')}")
 
-def get_blocked_users():
-    """Отримує список заблокованих користувачів через PHP API."""
+    except Exception as e:
+        log(f"Помилка підключення до PHP API: {e}")
+
+def GetBlockedUsers() -> list:
     try:
         response = requests.post(BLOCK_USERS_URL, data={'action': 'get_blocked'})
         response_data = response.json()
@@ -201,10 +204,9 @@ def get_blocked_users():
         if response.status_code == 200:
             return response_data 
         else:
-            print(f"⚠ Помилка отримання списку заблокованих: {response_data.get('message', 'Невідома помилка')}")
+            log(f"Помилка отримання списку заблокованих: {response_data.get('message', 'Невідома помилка')}")
             return []
     
     except Exception as e:
-        print(f"❌ Помилка підключення до PHP API: {e}")
+        log(f"Помилка підключення до PHP API: {e}")
         return []
-

@@ -10,7 +10,7 @@ load_dotenv(env_path)
 if not TEST_MODE:
     TELEGRAM_BOT_API = os.getenv("BOT_API")
 else:
-    TELEGRAM_BOT_API = os.getenv("BOT_API_TEST")
+    TELEGRAM_BOT_API = os.getenv("BOT_API_T")
 
 LOG_CLIENT_API = os.getenv("LOG_CLIENT_API")
 bot       = telebot.TeleBot(TELEGRAM_BOT_API)
