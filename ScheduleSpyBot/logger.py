@@ -14,6 +14,6 @@ def log(text:str, threadId:int = AdminPanel.logerThreadId.value):
             bot.send_message(AdminPanel.groupId.value, text, message_thread_id=threadId)
     except ApiException as r:
             if "retry after" in str(e):
-                log("Виникла помилка Логера. Забагато запитів.")
+                log("Р’РёРЅРёРєР»Р° РїРѕРјРёР»РєР° Р›РѕРіРµСЂР°. Р—Р°Р±Р°РіР°С‚Рѕ Р·Р°РїРёС‚С–РІ.")
     except Exception as e:
         print(f"logger error: {e}")
