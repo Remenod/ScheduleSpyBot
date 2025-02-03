@@ -115,7 +115,10 @@ def schedule(message):
 
 # Admin only
 
-@bot.message_handler(commands=['delete_week'], func=lambda message: (message.chat.id == AdminPanel.groupId.value) or (message.chat.id in adminIds))
+def isAdminOnly(message) -> bool:
+    return (message.chat.id == AdminPanel.groupId.value) or (message.chat.id in adminIds)
+
+@bot.message_handler(commands=['delete_week'], func=lambda message: isAdminOnly(message))
 def delete_week(message):
     log(f"delete_week call by {message.from_user.first_name}")
     try:
@@ -133,7 +136,7 @@ def delete_week(message):
     except Exception as e:
         log(f"Сталася помилка: {e}", message.message_thread_id)
 
-@bot.message_handler(commands=['print'], func=lambda message: (message.chat.id == AdminPanel.groupId.value) or (message.chat.id in adminIds))
+@bot.message_handler(commands=['print'], func=lambda message: isAdminOnly(message))
 def send_sheet_data(message):
     log(f"print call by {message.from_user.first_name}")
     try:
@@ -153,7 +156,7 @@ def send_sheet_data(message):
     except Exception as e:
         log(f"Сталася помилка: {e}", message.message_thread_id)
 
-@bot.message_handler(commands=['compare'], func=lambda message: (message.chat.id == AdminPanel.groupId.value) or (message.chat.id in adminIds))
+@bot.message_handler(commands=['compare'], func=lambda message: isAdminOnly(message))
 def compare(message):    
     log(f"comparator call by {message.from_user.first_name}")
     try:
@@ -177,7 +180,7 @@ def compare(message):
     except Exception as e:
         log(f"Сталася помилка: {e}", message.message_thread_id)
 
-@bot.message_handler(commands=['cool_compare'], func=lambda message: (message.chat.id == AdminPanel.groupId.value) or (message.chat.id in adminIds))
+@bot.message_handler(commands=['cool_compare'], func=lambda message: isAdminOnly(message))
 def coolCompare(message):
     log(f"coolComparator call by {message.from_user.first_name}")
     try:
@@ -201,7 +204,7 @@ def coolCompare(message):
     except Exception as e:
         log(f"Сталася помилка: {e}", message_thread_id=message.message_thread_id)
 
-@bot.message_handler(commands=['fill_schedule_table'], func=lambda message: (message.chat.id == AdminPanel.groupId.value) or (message.chat.id in adminIds))
+@bot.message_handler(commands=['fill_schedule_table'], func=lambda message: isAdminOnly(message))
 def fill_group_handler(message):
     log(f"fill_schedule_table call by {message.from_user.first_name}")
     try:
@@ -225,13 +228,13 @@ def fill_group_handler(message):
     except Exception as e:
         log(f"Сталася помилка: {e}", message.message_thread_id)       
 
-@bot.message_handler(commands=['call_checker'], func=lambda message: (message.chat.id == AdminPanel.groupId.value) or (message.chat.id in adminIds))
+@bot.message_handler(commands=['call_checker'], func=lambda message: isAdminOnly(message))
 def fill_group_handler(message):
         log("checker call")
         dataProcessor.CompareAllGroups()
         
-@bot.message_handler(commands=['stop'], func=lambda message: (message.chat.id == AdminPanel.groupId.value) or (message.chat.id in adminIds))
-def stop(message):    
+@bot.message_handler(commands=['stop'], func=lambda message: isAdminOnly(message))
+def stop(message):
     log(f"stop call by {message.from_user.first_name}")
     curent_system = platform.system()
     if curent_system == 'Windows':
@@ -250,6 +253,8 @@ def stop(message):
         except Exception as e:
             log(f"Помилка при спробі зупинки бота: {e}")
         log("Спроба зупинки бота на незареєстрованій системі завершилась невдачею.")
+
+
 
 
 @bot.message_handler(func=lambda message:
