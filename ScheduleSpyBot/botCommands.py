@@ -9,7 +9,10 @@ from botBase import adminIds
 from enumerations import Group, Notifier, AdminPanel, notifierToGroup
 
 
-@bot.message_handler(commands=['start'], func=lambda message: True)
+def isUserBanned(message):
+    return message.chat.id in databaseManager.GetBlockedUsers()
+
+@bot.message_handler(commands=['start'], func=lambda message: not isUserBanned(message))
 def start(message):
     log(f"start call by {message.from_user.first_name}")
     bot.send_message(message.chat.id, 
@@ -29,7 +32,7 @@ def start(message):
     if databaseManager.GetUserInfo(message.from_user.id)['group_name']=="":
         change_group(message)
 
-@bot.message_handler(commands=['change_group'], func=lambda message: True)
+@bot.message_handler(commands=['change_group'], func=lambda message: not isUserBanned(message))
 def change_group(message):
     log(f"change group call by {message.from_user.first_name}")
     fullName = None
@@ -62,7 +65,7 @@ def callback_handler(call):
 
     databaseManager.UpdateUserGroup(call.from_user.id, call.data)
 
-@bot.message_handler(commands=['help'], func=lambda message: True)
+@bot.message_handler(commands=['help'], func=lambda message: not isUserBanned(message))
 def helpComm(message):
     log(f"help call by {message.from_user.first_name}")
     bot.send_message(message.chat.id, 
@@ -74,7 +77,7 @@ def helpComm(message):
                      "/help - вивести цей список.\n",                     
                      message_thread_id=message.message_thread_id)
 
-@bot.message_handler(commands=['about'], func=lambda message: True)
+@bot.message_handler(commands=['about'], func=lambda message: not isUserBanned(message))
 def about(message):
     log(f"about call by {message.from_user.first_name}")
     bot.send_message(message.chat.id, 
@@ -89,7 +92,7 @@ def about(message):
                      disable_web_page_preview=True,
                      message_thread_id=message.message_thread_id)
 
-@bot.message_handler(commands=['schedule'], func=lambda message: True)
+@bot.message_handler(commands=['schedule'], func=lambda message: not isUserBanned(message))
 def schedule(message):
     log(f"schedule call by {message.from_user.first_name}")    
     markup = telebot.types.InlineKeyboardMarkup()
@@ -265,20 +268,18 @@ def ban(message):
             return     
 
         if cParts[1].startswith('@'):
-            user = databaseManager.GetUserByUserName(cParts[1])
+            user = databaseManager.GetUserByUsername(cParts[1])
+            log(f"{user}")
             if user == {}:
                 bot.send_message(message.chat.id, "Нема користувача з таким username.", message_thread_id=message.message_thread_id)
                 return None
+            databaseManager.BlockUser(user['chat_id'])
+            log(f"Користувач {user['full_name']}({user['username']}) заблокований.", message.message_thread_id)
 
         elif cParts[1].isdigit():
-            user = databaseManager.GetUserInfo(cParts[1])
-            if user == {}:
-                bot.send_message(message.chat.id, "Нема користувача з таким id.", message_thread_id=message.message_thread_id)
-                return None
+            databaseManager.BlockUser(cParts[1])
+            log(f"Користувач {cParts[1]} заблокований.", message.message_thread_id)
 
-        databaseManager.BlockUser(user['chat_id'])
-        log(f"Користувач {user['full_name']}({user['username']}) заблокований.", message.message_thread_id)
-    
     except Exception as e:
         log(f"Сталася помилка: {e}", message.message_thread_id)     
 
@@ -294,7 +295,8 @@ def execMsg(message):
     except Exception as e:            
         log(e)
 
-@bot.message_handler(func=lambda message: message.chat.id == AdminPanel.groupId.value and
+@bot.message_handler(func=lambda message:
+                     message.chat.id == AdminPanel.groupId.value and
                      message.message_thread_id in [item.value for item in Notifier],
                      content_types=['text', 'photo', 'video', 'audio', 'document', 'sticker', 'voice', 'location', 'contact', 'animation'])
 def notify(message):

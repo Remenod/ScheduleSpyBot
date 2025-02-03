@@ -101,13 +101,14 @@ def DeleteSheet(sheet_number:int):
 
 #User management
 
-def GetUserByUserName(username:str) -> dict:    
+def GetUserByUsername(username:str) -> dict:    
     if username.startswith('@'):
         username = username.replace('@', '', 1)
     userIds = GetAllUserIds()
     for userId in userIds:
         user = GetUserInfo(userId)
         if user['username'] == username:
+            user['chat_id'] = userId
             return user
     log(f"Користувача з ім'ям @{username} не знайдено.")
     return {}
