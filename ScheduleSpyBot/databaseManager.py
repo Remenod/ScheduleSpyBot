@@ -1,4 +1,5 @@
 import os
+from urllib import response
 import requests
 from logger import log
 from typing import Union
@@ -30,6 +31,7 @@ else:
     GET_SHEET_NAME_URL = os.getenv('GET_SHEET_NAME_T')
     DELETE_SHEET_URL   = os.getenv('DELETE_SHEET_T')
     BLOCK_USERS_URL    = os.getenv('BLOCK_USERS_T')
+    GET_BLOCKED_URL    = os.getenv('GET_BLOCKED_USERS_T')
 
 
 #Schedule management
@@ -191,32 +193,31 @@ def GetAllUsersByGroup(group:Group) -> list:
         log(f"Помилка під час запиту(GetAllUsersByGroup) до PHP сервера: {e}")
         return []
 
-def BlockUser(user_id:Union[int,str]):
+def BlockUser(chat_id: Union[int,str]):
     try:
         response = requests.post(BLOCK_USERS_URL,data={
             'action':'block',
-            'user_id': user_id
-        })
+            'user_id':chat_id
+            })
         response_data = response.json()
         if response.status_code == 200 and response_data.get('status') == 'success':
-          log(f"Користувач {user_id} успішно заблокований!")
+            log(f"Користувач {chat_id} успішно заблокований!")
         else:
-            log(f"Помилка блокування {user_id}: {response_data.get('message', 'Невідома помилка')}")
-
+            log(f"Помилка блокування {chat_id}: {response_data.get('message', 'Невідома помилка')}")
     except Exception as e:
-        log(f"Помилка підключення до PHP API: {e}")
+        log(f"Помилка підключення до PHP API : {e}")
 
 def GetBlockedUsers() -> list:
     try:
-        response = requests.post(BLOCK_USERS_URL, data={'action': 'get_blocked'})
+        response = requests.post(GET_BLOCKED_URL,data = {
+            'action':'get_blocked'
+            })
         response_data = response.json()
-
         if response.status_code == 200:
-            return response_data 
+            return response_data.get('data',[])
         else:
             log(f"Помилка отримання списку заблокованих: {response_data.get('message', 'Невідома помилка')}")
             return []
-    
     except Exception as e:
         log(f"Помилка підключення до PHP API: {e}")
         return []
