@@ -10,7 +10,7 @@ from enumerations import Group, Notifier, AdminPanel, notifierToGroup
 
 
 def isUserBanned(message):
-    return message.chat.id in databaseManager.GetBlockedUsers()
+    return str(message.chat.id) in databaseManager.GetBlockedUsers()
 
 @bot.message_handler(commands=['start'], func=lambda message: not isUserBanned(message))
 def start(message):
@@ -268,19 +268,16 @@ def ban(message):
             return     
 
         if cParts[1].startswith('@'):
-            user = databaseManager.GetUserByUsername(cParts[1])
-            log(f"{user}")
+            user = databaseManager.GetUserByUsername(cParts[1])            
             if user == {}:
                 bot.send_message(message.chat.id, "Нема користувача з таким username.", message_thread_id=message.message_thread_id)
                 return None
             databaseManager.BlockUser(user['chat_id'])
-            bot.send_message(message.chat.id,f"Користувач {user['full_name']}({user['username']}) заблокований.", message_thread_id=message.message_thread_id)
-            log(f"Користувач {user['full_name']}({user['username']}) заблокований.")
+            bot.send_message(message.chat.id,f"Користувач {user['full_name']}({user['username']}) заблокований.", message_thread_id=message.message_thread_id)            
 
         elif cParts[1].isdigit():
             databaseManager.BlockUser(cParts[1])
-            bot.send_message(message.chat.id,f"Користувач {cParts[1]} заблокований.", message_thread_id=message.message_thread_id)
-            log(f"Користувач {cParts[1]} заблокований.")
+            bot.send_message(message.chat.id,f"Користувач {cParts[1]} заблокований.", message_thread_id=message.message_thread_id)            
 
     except Exception as e:
         bot.send_message(message.chat.id,f"Сталася помилка блокування: {e}", message_thread_id=message.message_thread_id)     
