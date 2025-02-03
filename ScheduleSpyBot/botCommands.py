@@ -254,7 +254,33 @@ def stop(message):
             log(f"Помилка при спробі зупинки бота: {e}")
         log("Спроба зупинки бота на незареєстрованій системі завершилась невдачею.")
 
+@bot.message_handler(commands=['ban'], func=lambda message: isAdminOnly(message))
+def ban(message):
+    log(f"ban call by {message.from_user.first_name}")
+    try:
+        cParts = message.text.split()
 
+        if len(cParts) != 2:
+            bot.send_message(message.chat.id, "Будь ласка, вкажіть id або username. Наприклад: /ban @Telegram або /ban 1234567890", message_thread_id=message.message_thread_id)
+            return     
+
+        if cParts[1].startswith('@'):
+            user = databaseManager.GetUserByUserName(cParts[1])
+            if user == {}:
+                bot.send_message(message.chat.id, "Нема користувача з таким username.", message_thread_id=message.message_thread_id)
+                return None
+
+        elif cParts[1].isdigit():
+            user = databaseManager.GetUserInfo(cParts[1])
+            if user == {}:
+                bot.send_message(message.chat.id, "Нема користувача з таким id.", message_thread_id=message.message_thread_id)
+                return None
+
+        databaseManager.BlockUser(user['chat_id'])
+        log(f"Користувач {user['full_name']}({user['username']}) заблокований.", message.message_thread_id)
+    
+    except Exception as e:
+        log(f"Сталася помилка: {e}", message.message_thread_id)     
 
 
 @bot.message_handler(func=lambda message:

@@ -1,5 +1,4 @@
 import os
-from urllib import response
 import requests
 from logger import log
 from typing import Union
@@ -99,6 +98,17 @@ def DeleteSheet(sheet_number:int):
 
 
 #User management
+
+def GetUserByUserName(username:str) -> dict:    
+    if username.startswith('@'):
+        username = username.replace('@', '', 1)
+    userIds = GetAllUserIds()
+    for userId in userIds:
+        user = GetUserInfo(userId)
+        if user['username'] == username:
+            return user
+    log(f"Користувача з ім'ям @{username} не знайдено.")
+    return {}
 
 def SaveUser(chat_id: Union[int, str], full_name:str, username:str):
     if username is None:
