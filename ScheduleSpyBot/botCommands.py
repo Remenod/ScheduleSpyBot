@@ -274,14 +274,17 @@ def ban(message):
                 bot.send_message(message.chat.id, "Нема користувача з таким username.", message_thread_id=message.message_thread_id)
                 return None
             databaseManager.BlockUser(user['chat_id'])
-            log(f"Користувач {user['full_name']}({user['username']}) заблокований.", message.message_thread_id)
+            bot.send_message(message.chat.id,f"Користувач {user['full_name']}({user['username']}) заблокований.", message_thread_id=message.message_thread_id)
+            log(f"Користувач {user['full_name']}({user['username']}) заблокований.")
 
         elif cParts[1].isdigit():
             databaseManager.BlockUser(cParts[1])
-            log(f"Користувач {cParts[1]} заблокований.", message.message_thread_id)
+            bot.send_message(message.chat.id,f"Користувач {cParts[1]} заблокований.", message_thread_id=message.message_thread_id)
+            log(f"Користувач {cParts[1]} заблокований.")
 
     except Exception as e:
-        log(f"Сталася помилка: {e}", message.message_thread_id)     
+        bot.send_message(message.chat.id,f"Сталася помилка блокування: {e}", message_thread_id=message.message_thread_id)     
+        log(f"Сталася помилка блокування: {e}")
 
 
 @bot.message_handler(func=lambda message:
