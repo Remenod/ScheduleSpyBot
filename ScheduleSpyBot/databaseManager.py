@@ -167,7 +167,9 @@ def GetAllUserIds() -> list:
         response = requests.get(USER_IDS_URL)
         if response.status_code == 200:
             result = response.json()
-            return result
+
+            ignore = GetBlockedUsers()
+            return list(set(result) - set(ignore))
         else:
             log(f"Помилка отримання користувачів: {result.get('error')}")
             return []
@@ -186,7 +188,8 @@ def GetAllUsersByGroup(group:Group) -> list:
         result = response.json()
         
         if result.get('success') and 'chat_ids' in result:
-            return result['chat_ids']
+            ignore = GetBlockedUsers()
+            return list(set(result['chat_ids']) - set(ignore))            
         else:
             log(f"Помилка отримання користувачів групи {group.name}: {result.get('error')}")
             return []
