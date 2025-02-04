@@ -21,6 +21,8 @@ if not TEST_MODE:
     SAVE_SCHEDULE_URL  = os.getenv('SAVE_SCHEDULE_URL')
     GET_SHEET_NAME_URL = os.getenv('GET_SHEET_NAME')
     DELETE_SHEET_URL   = os.getenv('DELETE_SHEET')
+    BLOCK_USERS_URL    = os.getenv('BLOCK_USERS_URL')
+    GET_BLOCKED_URL    = os.getenv('GET_BLOCKED_USERS_URL')
 
 else:
     PHP_API_URL        = os.getenv('PHP_API_URL_T')
