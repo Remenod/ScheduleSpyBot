@@ -103,9 +103,10 @@ def GetSchedule(sheet_, columNum:Group, rawOutput:bool = False) -> str:
                     main_cell = sheet.cell(merged_range.min_row, merged_range.min_col)
                     main_value = None
                     if(not rawOutput):
-                        main_value = GetRightLines(str(main_cell.value))
+                        main_value = GetRightLines(main_cell.value)
                     else:
                         main_value = main_cell.value
+
                     if (row % 17 != 0 and row % 17 != 1) and main_value is not None:
                         output += f"{main_value}\n"
                     elif main_value is None:
@@ -114,7 +115,7 @@ def GetSchedule(sheet_, columNum:Group, rawOutput:bool = False) -> str:
         else:                 
             cell_value = None
             if(not rawOutput):
-                cell_value = GetRightLines(str(cell.value))
+                cell_value = GetRightLines(cell.value)
             else:
                 cell_value = cell.value
             if (row % 17 != 0 and row % 17 != 1) and cell_value is not None:

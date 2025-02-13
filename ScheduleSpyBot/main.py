@@ -1,5 +1,5 @@
 from csAutoCompiler import CompileAll
-# CompileAll()
+CompileAll()
 
 import telebot
 import threading
@@ -14,7 +14,7 @@ from botBase import bot
 log("Bot started...")
 
 changesChecker.checkTimeout = 900
-# changesChecker.StartCheckerLoop(changesChecker.checkTimeout)
+changesChecker.StartCheckerLoop(changesChecker.checkTimeout)
 
 def reconnecter():
     while True:
