@@ -55,6 +55,8 @@ class CustomTeleBot(telebot.TeleBot):
                     allow_paid_broadcast=allow_paid_broadcast)
                 break
             except Exception as e:
+                if not ("Too Many Requests" in str(e)):
+                    break
                 print(e) 
                 time.sleep(10)
 
