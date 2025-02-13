@@ -307,6 +307,7 @@ def notify(message):
         users = databaseManager.GetAllUserIds()
 
     if users:
+        succes_users = []
         for user in users:
             try:                                                           
                 if message.content_type == 'text':
@@ -327,8 +328,9 @@ def notify(message):
                     bot.send_animation(chat_id=user, animation=message.animation.file_id, caption=message.caption or "")
                 else:
                     log(f"Тип повідомлення {message.content_type} не підтримується.")
-
+                succes_users.append(user)
             except Exception as e:
                 log(f"Сталася помилка: {e}")
+        log(f"Повідомлення отримали:\n {succes_users} ({len(succes_users)}/{len(users)})")        
     else:
         log(f"Сталася помилка. Группу для масового сповіщення не знайдено")

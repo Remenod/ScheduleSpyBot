@@ -19,7 +19,7 @@ changesChecker.checkTimeout = 900
 def reconnecter():
     while True:
         try:
-            bot.polling(none_stop=True)
+            bot.polling(none_stop=True,timeout=180)
         except telebot.apihelper.ApiException as r:
             if "retry after" in str(e):
                 log("Виникла помилка. Забагато запитів.")

@@ -1,6 +1,5 @@
 import os
 import openpyxl
-import openpyxl.workbook
 import requests
 import subprocess
 import databaseManager
@@ -9,10 +8,10 @@ from io import BytesIO
 from botBase import bot
 from enumerations import Group
 from dotenv import load_dotenv
+from testModeVariable import TEST_MODE
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
-from testModeVariable import TEST_MODE
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -53,13 +52,16 @@ def GetSheetGids() -> list:
 gids = GetSheetGids()
 
 def SendToAllUsers(msg:str):
-    try:
-        users = databaseManager.GetAllUserIds()
-        for user in users:
-             bot.send_message(user, msg)
+    users = databaseManager.GetAllUserIds()
+    succes_users = []
+    for user in users:
+        try:        
+             bot.garanted_send_message(user, msg)
+             succes_users.append(user)
+        except Exception as e:
+            log(f"Error sending message to user: {e}")
 
-    except Exception as e:
-         log(f"Error sending message to user: {e}")
+    log(f"Повідомлення отримали:\n {succes_users} ({len(succes_users)}/{len(users)})")
 
 def GetRightLines(value:str) -> str:
     if value is None:
@@ -227,12 +229,16 @@ def CompareAllGroups():
             log(f"ВИЯВЛЕНІ ЗМІНИ В РОЗКЛАДІ ГРУПИ {group.name}")
             allCurrGroupUsers = databaseManager.GetAllUsersByGroup(group)
             if allCurrGroupUsers is not None or len(allCurrGroupUsers) != 0:
+                succes_users = []        
                 for user in allCurrGroupUsers:
                     try:
-                        bot.send_message(user, f"*В розкладі виявлені зміни:*\n{ParseComparerOutput(comparerOut)}", "Markdown")
-                        bot.send_message(user, f"Для перегляду можете скористатися командою /schedule")
+                        bot.garanted_send_message(user, f"*В розкладі виявлені зміни:*\n{ParseComparerOutput(comparerOut)}", "Markdown")
+                        bot.garanted_send_message(user, f"Для перегляду можете скористатися командою /schedule")
+                        succes_users.append(user)
                     except Exception as e:
                         log(f"Error sending message to user: {e}")
+
+                log(f"Повідомлення отримали:\n {succes_users} ({len(succes_users)}/{len(allCurrGroupUsers)})")
 
         databaseManager.WriteSchedule(actualWeekNum, group, newSchedule)
     log("Готово")
