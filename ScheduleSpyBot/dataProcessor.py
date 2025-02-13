@@ -64,7 +64,7 @@ def SendToAllUsers(msg:str):
 def GetRightLines(value:str) -> str:
     if value is None:
         return None
-    lines = value.split("\n")
+    lines = str(value).split("\n")
     subjectLine = next((line for line in lines if line.strip()), None)
     auditoriumLine = next(
         (line for line in lines if line.strip().startswith("а.") or 
@@ -101,7 +101,7 @@ def GetSchedule(sheet_, columNum:Group, rawOutput:bool = False) -> str:
                     main_cell = sheet.cell(merged_range.min_row, merged_range.min_col)
                     main_value = None
                     if(not rawOutput):
-                        main_value = GetRightLines(main_cell.value)
+                        main_value = GetRightLines(str(main_cell.value))
                     else:
                         main_value = main_cell.value
                     if (row % 17 != 0 and row % 17 != 1) and main_value is not None:
@@ -112,7 +112,7 @@ def GetSchedule(sheet_, columNum:Group, rawOutput:bool = False) -> str:
         else:                 
             cell_value = None
             if(not rawOutput):
-                cell_value = GetRightLines(cell.value)
+                cell_value = GetRightLines(str(cell.value))
             else:
                 cell_value = cell.value
             if (row % 17 != 0 and row % 17 != 1) and cell_value is not None:
