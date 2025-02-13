@@ -62,6 +62,7 @@ def change_group(message):
 def callback_handler(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     bot.send_message(call.message.chat.id, f"Ви обрали групу: {call.data}")
+    log(f"User {call.from_user.first_name} {call.message.chat.id} обрав групу {call.data}")
 
     databaseManager.UpdateUserGroup(call.from_user.id, call.data)
 
