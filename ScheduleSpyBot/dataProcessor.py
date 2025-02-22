@@ -1,4 +1,5 @@
 import os
+from urllib import response
 import openpyxl
 import requests
 import subprocess
@@ -6,9 +7,9 @@ import databaseManager
 from logger import log
 from io import BytesIO
 from botBase import bot
-from enumerations import Group
 from dotenv import load_dotenv
 from testModeVariable import TEST_MODE
+from enumerations import Group, AdminPanel
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google.oauth2.service_account import Credentials
@@ -50,18 +51,6 @@ def GetSheetGids() -> list:
         log("Gids loaded.")
 
 gids = GetSheetGids()
-
-def SendToAllUsers(msg:str):
-    users = databaseManager.GetAllUserIds()
-    succes_users = []
-    for user in users:
-        try:        
-             bot.garanted_send_message(user, msg)
-             succes_users.append(user)
-        except Exception as e:
-            log(f"Error sending message to user: {e}")
-
-    log(f"Повідомлення отримали:\n {succes_users} ({len(succes_users)}/{len(users)})")
 
 def GetRightLines(value:str) -> str:
     if value is None:
@@ -203,17 +192,22 @@ def CompareAllGroups():
                return None
 
         finally:
-            SendToAllUsers("В розкладі з'явився новий тиждень.\n Для перегляду можете скористатися командою /schedule")
-            log("В розкладі з'явились нові тижні")
-            gids = GetSheetGids()
-            temp = sameAsOldWeekIndex
+            try:
+                res = bot.garanted_send_messages(databaseManager.GetAllUserIds,"В розкладі з'явився новий тиждень.\n Для перегляду можете скористатися командою /schedule")
+                if res != {}:
+                    log(f"Помилки при повідомленні наявності нового тижня користувачам: \n{res}")
+                log("В розкладі з'явились нові тижні")
+                gids = GetSheetGids()
+                temp = sameAsOldWeekIndex
 
-            while (actualWeekNum+temp-1) != actualWeekNum:
-                for group in Group:
-                    currSchedule = GetSchedule(workbook.worksheets[actualWeekNum+temp-2],group)
-                    databaseManager.WriteSchedule(actualWeekNum+temp-1, group, f"{currSchedule}")
+                while (actualWeekNum+temp-1) != actualWeekNum:
+                    for group in Group:
+                        currSchedule = GetSchedule(workbook.worksheets[actualWeekNum+temp-2],group)
+                        databaseManager.WriteSchedule(actualWeekNum+temp-1, group, f"{currSchedule}")
 
-                temp -= 1
+                    temp -= 1
+            except Exception as e:
+                log(e)
     else:
         log("нових тижнів не знайдено")
         sameAsOldWeekIndex = lastSavedWeekNum-actualWeekNum+1;
@@ -229,17 +223,12 @@ def CompareAllGroups():
         if comparerOut != "без змін":
             log(f"ВИЯВЛЕНІ ЗМІНИ В РОЗКЛАДІ ГРУПИ {group.name}")
             allCurrGroupUsers = databaseManager.GetAllUsersByGroup(group)
-            if allCurrGroupUsers is not None or len(allCurrGroupUsers) != 0:
-                succes_users = []        
-                for user in allCurrGroupUsers:
-                    try:
-                        bot.garanted_send_message(user, f"*В розкладі виявлені зміни:*\n{ParseComparerOutput(comparerOut)}", "Markdown")
-                        bot.garanted_send_message(user, f"Для перегляду можете скористатися командою /schedule")
-                        succes_users.append(user)
-                    except Exception as e:
-                        log(f"Error sending message to user: {e}")
+            allCurrGroupUsers.append(AdminPanel.groupId.value)
+            if allCurrGroupUsers is not None or len(allCurrGroupUsers) != 0:                                        
+                res1 = bot.garanted_send_messages(allCurrGroupUsers, f"*В розкладі виявлені зміни:*\n{ParseComparerOutput(comparerOut)}", "Markdown")
+                bot.garanted_send_messages(allCurrGroupUsers, f"Для перегляду можете скористатися командою /schedule")
 
-                log(f"Повідомлення отримали:\n {succes_users} ({len(succes_users)}/{len(allCurrGroupUsers)})")
+                log(f"Помилки при надсиланні змін користувачам: \n{res1}")
 
         databaseManager.WriteSchedule(actualWeekNum, group, newSchedule)
     log("Готово")

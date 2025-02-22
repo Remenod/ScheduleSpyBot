@@ -104,7 +104,7 @@ def schedule(message):
         return None
 
     currWeekNum = dataProcessor.weekNums[0]
-    currWeekGid = dataProcessor.gids[int(currWeekNum)-1] or 1
+    currWeekGid = dataProcessor.gids[int(currWeekNum)-1+17] or 1
 
     button1 = telebot.types.InlineKeyboardButton(text="Відкрити розклад", web_app=telebot.types.WebAppInfo(url=
                                                     f"https://remenod.github.io/ScheduleSpyBot/?currWeekGid={currWeekGid}"))
