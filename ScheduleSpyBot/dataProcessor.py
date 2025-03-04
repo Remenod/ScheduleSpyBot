@@ -193,7 +193,7 @@ def CompareAllGroups():
 
         finally:
             try:
-                res = bot.garanted_send_messages(databaseManager.GetAllUserIds,"В розкладі з'явився новий тиждень.\n Для перегляду можете скористатися командою /schedule")
+                res = bot.garanted_send_messages(databaseManager.GetAllUserIds(),"В розкладі з'явився новий тиждень.\n Для перегляду можете скористатися командою /schedule")
                 if res != {}:
                     log(f"Помилки при повідомленні наявності нового тижня користувачам: \n{res}")
                 log("В розкладі з'явились нові тижні")
