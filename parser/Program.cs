@@ -8,7 +8,7 @@ namespace parser
     {
         static string ParseChanges(string data)
         {
-            var schedule = new Scedule("\n"+data);            
+            var schedule = new Schedule("\n"+data);            
             var output = "";
             foreach (var day in schedule)
                 if (!day.isNoChanges())

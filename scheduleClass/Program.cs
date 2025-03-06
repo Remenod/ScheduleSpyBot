@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace scheduleClass
 {
-    public class Scedule : IEnumerable<Scedule.Day>
+    public class Schedule : IEnumerable<Schedule.Day>
     {
         public class Day : IEnumerable
         {
@@ -157,7 +157,7 @@ namespace scheduleClass
         public Day Friday { get; set; }
         public Day Saturday { get; set; }
 
-        public Scedule(string input)
+        public Schedule(string input)
         {
             var inputSplitted = input.Split("\n");
             if (inputSplitted.Length >= 43)
@@ -185,8 +185,8 @@ namespace scheduleClass
             }
             else throw new Exception("Invalid input");
         }
-        public static Scedule operator -(Scedule a, Scedule b) =>        
-            new Scedule($"зміни в {a.header} відносно {b.header}")
+        public static Schedule operator -(Schedule a, Schedule b) =>        
+            new Schedule($"зміни в {a.header} відносно {b.header}")
             {
                 Monday    = a.Monday    - b.Monday,
                 Tuesday   = a.Tuesday   - b.Tuesday,
@@ -195,15 +195,15 @@ namespace scheduleClass
                 Friday    = a.Friday    - b.Friday,
                 Saturday  = a.Saturday  - b.Saturday
             };        
-        public static bool operator ==(Scedule a, Scedule b) =>
+        public static bool operator ==(Schedule a, Schedule b) =>
              a.Monday    == b.Monday &&
              a.Tuesday   == b.Tuesday &&
              a.Wednesday == b.Wednesday &&
              a.Thursday  == b.Thursday &&
              a.Friday    == b.Friday &&
              a.Saturday  == b.Saturday;
-        public static bool operator !=(Scedule a, Scedule b) => !(a == b);
-        public override bool Equals(object? obj) => obj is Scedule other && this == other;
+        public static bool operator !=(Schedule a, Schedule b) => !(a == b);
+        public override bool Equals(object? obj) => obj is Schedule other && this == other;
         public override int GetHashCode() => base.GetHashCode();
         public override string ToString()
         {
@@ -259,8 +259,10 @@ namespace scheduleClass
             for (var i = 0; i < 6; i++)
                 yield return this[i];
         }
-        IEnumerator IEnumerable.GetEnumerator() =>
-            throw new NotImplementedException();        
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
     }
-    public class Program { static void Main() { } }
 }

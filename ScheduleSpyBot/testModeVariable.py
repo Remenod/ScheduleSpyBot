@@ -1,1 +1,1 @@
-TEST_MODE:bool = False
+TEST_MODE:bool = True
