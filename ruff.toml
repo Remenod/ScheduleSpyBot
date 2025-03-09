@@ -1,0 +1,9 @@
+line-length    = 102
+indent-width   = 4
+target-version = "py310"
+
+[format]
+quote-style               = "single"
+indent-style              = "space"
+skip-magic-trailing-comma = false
+line-ending               = "lf"
