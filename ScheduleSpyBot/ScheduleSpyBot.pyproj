@@ -11,7 +11,7 @@
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>ScheduleSpyBot</Name>
-    <RootNamespace>SxheduleSpyBot</RootNamespace>
+    <RootNamespace>ScheduleSpyBot</RootNamespace>
     <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -26,30 +26,19 @@
     <Compile Include="botBase.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="botEnv.py" />
     <Compile Include="dataProcessor.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="databaseManager.py" />
     <Compile Include="main.py" />
-    <Compile Include="csAutoCompiler.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="enumerations.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="changesChecker.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="botCommands.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="logger.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="connectionChecker.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="testModeVariable.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -59,7 +48,7 @@
        the BeforeBuild and AfterBuild targets below. -->
   <!--<Target Name="CoreCompile" />-->
   <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
+    <Target Name="AfterBuild">
+    </Target>
   </Target>
 </Project>
