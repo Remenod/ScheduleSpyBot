@@ -5,7 +5,6 @@ import databaseManager
 
 from io import BytesIO
 from botEnv import COMPARER_DLL_PATH, PARSER_DLL_PATH, SPREADSHEET_ID, SERVICE_ACCOUNT_FILE
-from urllib import response
 from logger import log
 from botBase import bot
 from enumerations import Group, AdminPanel
@@ -73,7 +72,7 @@ def load_workbook() -> openpyxl.workbook.workbook.Workbook:
     export_url = f'https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/export?format=xlsx'
     headers = {'Authorization': f'Bearer {credentials.token}'}
 
-    requests.get(export_url, headers=headers)
+    response = requests.get(export_url, headers=headers)
 
     if response.status_code == 200:
         return openpyxl.load_workbook(BytesIO(response.content))
@@ -140,10 +139,10 @@ def compare_schedules(input1: str, input2: str) -> str:
         raise Exception('Error: Compiled executable not found.')
 
 
-def parse_comparer_output(input: str) -> str:
+def parse_comparer_output(inp: str) -> str:
     try:
         run_result = subprocess.run(
-            ['dotnet', PARSER_DLL_PATH, input], capture_output=True, text=True, encoding='utf-8'
+            ['dotnet', PARSER_DLL_PATH, inp], capture_output=True, text=True, encoding='utf-8'
         )
         if run_result.returncode != 0:
             log(f'Execution Error:{run_result.stderr.strip()}')

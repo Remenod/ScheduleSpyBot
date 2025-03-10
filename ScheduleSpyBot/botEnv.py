@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 # fmt: off
 
 TEST_MODE        = True
-BUILD_LOCAL_DEPS = False
+BUILD_LOCAL_DEPS = True
 
 check_cooldown          = 1500
 reconnecting_error_sent = False
@@ -12,13 +12,13 @@ reconnecting_error_sent = False
 current_dir = path.dirname(path.abspath(__file__))
 secrets_dir = path.join(current_dir, '..', 'Secrets')
 
-BUILD_DIR            = 'build'
+BUILD_DIR            = path.join(current_dir, '..', 'build')
 SERVICE_ACCOUNT_FILE = path.abspath(path.join(secrets_dir, 'schedulespybot-6e8cfdc17fcb.json'))
 SCHEDULE_CLASS_DIR   = path.abspath(path.join(current_dir, '..', 'scheduleClass'))
 COMPARER_DIR         = path.abspath(path.join(current_dir, '..', 'comparer'))
-COMPARER_DLL_PATH    = path.join(COMPARER_DIR, BUILD_DIR, 'comparer.dll')
+COMPARER_DLL_PATH    = path.join(BUILD_DIR, 'comparer.dll')
 PARSER_DIR           = path.abspath(path.join(current_dir, '..', 'parser'))
-PARSER_DLL_PATH      = path.join(PARSER_DIR, BUILD_DIR, 'parser.dll')
+PARSER_DLL_PATH      = path.join(BUILD_DIR, 'parser.dll')
 
 load_dotenv(path.join(secrets_dir, 'KEYS.env'))
 
